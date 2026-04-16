@@ -9,18 +9,15 @@ function updateEngine() {
 
     // Update Topics
     const mainTopic = document.querySelector('.main-topic');
-    const subTopic = document.querySelector('.sub-topic');
     if(data.topic && mainTopic) mainTopic.textContent = data.topic;
-    if(data.subtopic && subTopic) subTopic.textContent = data.subtopic;
 
     // Update News Paragraphs (10 items)
-    const newsContainer = document.querySelector('.news-frame');
+    const newsContainer = document.getElementById('news-container');
     if (data.paragraphs && newsContainer) {
         newsContainer.innerHTML = ''; 
         data.paragraphs.forEach((p, index) => {
             const div = document.createElement('div');
             div.className = 'p-item';
-            // Each item waits 6s multiplied by its position
             div.style.animationDelay = (index * 6) + 's'; 
             div.textContent = p;
             newsContainer.appendChild(div);
@@ -28,13 +25,12 @@ function updateEngine() {
     }
 
     // Update Highlights (20 items)
-    const bulletContainer = document.querySelector('.highlights-frame');
+    const bulletContainer = document.getElementById('highlights-container');
     if (data.bullets && bulletContainer) {
         bulletContainer.innerHTML = '';
         data.bullets.forEach((b, index) => {
             const div = document.createElement('div');
             div.className = 'h-item';
-            // Each bullet waits 5s
             div.style.animationDelay = (index * 5) + 's';
             div.textContent = `• ${b}`;
             bulletContainer.appendChild(div);
@@ -42,16 +38,28 @@ function updateEngine() {
     }
 
     // Update Media (10 images)
-    const mediaContainer = document.querySelector('.media-frame');
+    const mediaContainer = document.getElementById('media-container');
     if (data.images && mediaContainer) {
         mediaContainer.innerHTML = '';
         data.images.forEach((img, index) => {
             const div = document.createElement('div');
             div.className = 'slide';
             div.style.backgroundImage = `url('${img}')`;
-            // Each image waits 10s
             div.style.animationDelay = (index * 10) + 's';
             mediaContainer.appendChild(div);
+        });
+    }
+
+    // NEW: Update Social Engagement (3 items)
+    const socialContainer = document.getElementById('social-container');
+    if (data.socials && socialContainer) {
+        socialContainer.innerHTML = '';
+        data.socials.forEach((s, index) => {
+            const div = document.createElement('div');
+            div.className = 's-icon-group';
+            div.style.animationDelay = (index * 5) + 's';
+            div.innerHTML = `<span>${s}</span>`;
+            socialContainer.appendChild(div);
         });
     }
 }
@@ -64,9 +72,7 @@ window.addEventListener('storage', (e) => { if (e.key === 'newsData') updateEngi
 function updateClock() {
     const now = new Date();
     const timeEl = document.getElementById('real-time');
-    const dateEl = document.getElementById('real-date');
     if(timeEl) timeEl.textContent = now.toLocaleTimeString('am-ET', {hour12: false});
-    if(dateEl) dateEl.textContent = now.toLocaleDateString('am-ET', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
 }
 
 setInterval(updateClock, 1000);
