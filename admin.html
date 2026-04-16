@@ -5,71 +5,106 @@
     <title>Admin - My Day News</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body { font-family: sans-serif; background: #eee; padding: 40px; }
-        .box { background: white; padding: 20px; border-radius: 8px; max-width: 600px; margin: auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        textarea { width: 100%; height: 100px; margin-top: 10px; }
-        .btn { background: #007bff; color: white; padding: 10px; border: none; width: 100%; cursor: pointer; margin-top: 10px; }
-        .btn-ai { background: #6f42c1; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; padding: 40px; color: #333; }
+        .box { background: white; padding: 30px; border-radius: 12px; max-width: 650px; margin: auto; box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+        h2 { margin-top: 0; color: #1c1e21; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        textarea, input { width: 100%; padding: 12px; margin-top: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
+        textarea { height: 120px; resize: vertical; }
+        .btn { padding: 14px; border: none; width: 100%; cursor: pointer; margin-top: 15px; border-radius: 6px; font-weight: bold; font-size: 16px; transition: opacity 0.2s; }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .btn-ai { background: #6f42c1; color: white; }
+        .btn-save { background: #007bff; color: white; }
+        hr { border: 0; border-top: 1px solid #eee; margin: 25px 0; }
+        #status-msg { font-size: 12px; color: #666; margin-top: 8px; text-align: center; }
     </style>
 </head>
 <body>
     <div class="box">
-        <h2>News Creator</h2>
-        <textarea id="aiInput" placeholder="Paste source news here..."></textarea>
-        <button class="btn btn-ai" onclick="generate()">Generate with AI ✨</button>
+        <h2>የዜና ማቀነባበሪያ (News Creator)</h2>
+        <p style="font-size: 14px; color: #666;">Paste raw news below and let AI format it for the broadcast.</p>
+        
+        <textarea id="aiInput" placeholder="ወደ አማርኛ እንዲቀየር የሚፈልጉትን ጽሁፍ እዚህ ይለጥፉ..."></textarea>
+        <button class="btn btn-ai" id="aiBtn" onclick="generate()">Generate with AI ✨</button>
+        <div id="status-msg"></div>
+
         <hr>
-        <input type="text" id="t" placeholder="Topic" style="width:100%">
-        <textarea id="p" placeholder="Paragraphs (one per line)"></textarea>
-        <button class="btn" onclick="save()">Save & Publish Live</button>
+
+        <label>ርዕስ (Topic)</label>
+        <input type="text" id="t" placeholder="የዜናው ርዕስ...">
+        
+        <label style="display:block; margin-top:15px;">ዝርዝር መረጃ (Paragraphs - Use Enter for new lines)</label>
+        <textarea id="p" placeholder="ዝርዝር ዜና እዚህ ይገባል..."></textarea>
+        
+        <button class="btn btn-save" onclick="save()">Save & Publish Live 🚀</button>
     </div>
 
     <script>
-        const supabase = lib.supabase.createClient('https://hghgifkleqhdeqpoqjln.supabase.co', 'sb_publishable_4qkd_gYISl4j_s90SqNQ1w_6nfWRcrd');
+        // Use 'supabase' instead of 'lib.supabase' for better compatibility with CDN
+        const { createClient } = window.supabase;
+        const _supabase = createClient('https://hghgifkleqhdeqpoqjln.supabase.co', 'sb_publishable_4qkd_gYISl4j_s90SqNQ1w_6nfWRcrd');
+
+        async function generate() {
+            const rawText = document.getElementById('aiInput').value;
+            if (!rawText) return alert("እባክዎን መጀመሪያ ጽሁፍ ያስገቡ!");
+
+            const btn = document.getElementById('aiBtn');
+            const status = document.getElementById('status-msg');
+            
+            btn.textContent = "AI እያሰላ ነው... 🧠";
+            btn.disabled = true;
+            status.textContent = "Contacting Supabase Edge Function...";
+
+            try {
+                // IMPORTANT: Use JSON.stringify for the body
+                const { data, error } = await _supabase.functions.invoke('process-news', {
+                    body: { text: rawText } 
+                });
+
+                if (error) throw error;
+
+                // Handle both string and object responses
+                const news = (typeof data === 'string') ? JSON.parse(data) : data;
+                
+                document.getElementById('t').value = news.topic || "";
+                document.getElementById('p').value = Array.isArray(news.paragraphs) ? news.paragraphs.join('\n\n') : news.paragraphs;
+                
+                status.textContent = "AI Generation Successful!";
+                alert("AI Generation Complete!");
+            } catch (err) {
+                console.error("Full Error:", err);
+                status.textContent = "Error occurred. Check console.";
+                alert("AI Error: " + err.message);
+            } finally {
+                btn.textContent = "Generate with AI ✨";
+                btn.disabled = false;
+            }
+        }
 
         async function save() {
             const topic = document.getElementById('t').value;
-            const paras = document.getElementById('p').value.split('\n');
+            const content = document.getElementById('p').value;
+            if (!topic || !content) return alert("እባክዎን ርዕስ እና ዝርዝር መረጃ ይሙሉ!");
+
+            const paras = content.split('\n').filter(line => line.trim() !== "");
             
-            // Set others to false, this one to true
-            await supabase.from('news_items').update({ is_active: false }).neq('topic', '---');
-            
-            const { error } = await supabase.from('news_items').insert([{
-                topic: topic, paragraphs: paras, is_active: true, images: ["https://picsum.photos/600/700"]
-            }]);
-            
-            if (!error) alert("News is now LIVE!");
+            try {
+                // 1. Deactivate all news
+                await _supabase.from('news_items').update({ is_active: false }).neq('topic', '---');
+                
+                // 2. Insert and set current to active
+                const { error } = await _supabase.from('news_items').insert([{
+                    topic: topic, 
+                    paragraphs: paras, 
+                    is_active: true, 
+                    images: ["https://picsum.photos/600/700"]
+                }]);
+                
+                if (error) throw error;
+                alert("ዜናው በተሳካ ሁኔታ ተለቋል! (News is now LIVE!)");
+            } catch (err) {
+                alert("Save Error: " + err.message);
+            }
         }
-
-        async function generate() {
-    const rawText = document.getElementById('aiInput').value;
-    if (!rawText) return alert("Please paste some news text first!");
-
-    const btn = document.querySelector('.btn-ai');
-    btn.textContent = "AI is thinking... 🧠";
-
-    try {
-        // This calls the "process-news" function you just created in the dashboard
-        const { data, error } = await supabase.functions.invoke('process-news', {
-            body: { text: rawText }
-        });
-
-        if (error) throw error;
-
-        // The AI sends a JSON string, we parse it to get our fields
-        const news = (typeof data === 'string') ? JSON.parse(data) : data;
-        
-        // Auto-fill the form boxes
-        document.getElementById('t').value = news.topic;
-        document.getElementById('p').value = news.paragraphs.join('\n');
-        
-        alert("AI Generation Complete!");
-    } catch (err) {
-        console.error(err);
-        alert("AI Error: Check if the Edge Function is deployed and the API Key is in Secrets.");
-    } finally {
-        btn.textContent = "Generate with AI ✨";
-    }
-}
     </script>
 </body>
 </html>
