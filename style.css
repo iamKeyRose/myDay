@@ -2,7 +2,10 @@
     --myday-gold: #FFD700;
     --myday-blue: #002B5B;
     --live-red: #ff0000;
-    --cycle-speed: 12s;
+    /* FIX: Total loop times must be long enough for all items */
+    --paragraph-loop: 60s; /* 10 paragraphs * 6s */
+    --bullet-loop: 100s;    /* 20 bullets * 5s */
+    --image-loop: 100s;     /* 10 images * 10s */
     --social-speed: 15s;
 }
 
@@ -36,6 +39,7 @@ body, html {
     overflow: hidden;
 }
 
+/* Headers */
 .brand-frame { 
     grid-area: brand; display: flex; align-items: center; 
     padding-left: 5%; border-bottom: 4px solid var(--myday-gold); 
@@ -75,12 +79,15 @@ body, html {
 #real-time { font-size: 2vw; font-weight: 900; color: var(--myday-gold); }
 #real-date { font-size: 0.8vw; opacity: 0.8; }
 
+/* Media Section */
 .media-frame { grid-area: media; position: relative; overflow: hidden; border-right: 1px solid #333; }
-.slide { position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0; animation: zoomFade 20s infinite; }
+.slide { position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0; animation: zoomFade var(--image-loop) infinite linear; }
 
+/* News Section */
 .news-frame { grid-area: news; display: flex; align-items: center; justify-content: center; position: relative; padding: 2vw; }
-.p-item { position: absolute; opacity: 0; font-size: 2.2vw; text-align: center; width: 85%; animation: feedInOut var(--cycle-speed) infinite; line-height: 1.4; }
+.p-item { position: absolute; opacity: 0; font-size: 2.2vw; text-align: center; width: 85%; animation: feedInOut var(--paragraph-loop) infinite linear; line-height: 1.4; }
 
+/* Social Section */
 .social-frame { 
     grid-area: social; background: var(--live-red); 
     display: flex; align-items: center; justify-content: center; position: relative; 
@@ -97,11 +104,29 @@ body, html {
 .s-icon-group:nth-child(3) { animation-delay: 10s; }
 .s-icon-group svg { width: 3vw; height: 3vw; fill: white; }
 
-.highlights-frame { grid-area: highlights; background: #000; border-top: 4px solid var(--myday-gold); display: flex; align-items: center; justify-content: center; overflow: hidden; }
-.h-item { position: absolute; opacity: 0; font-size: 1.8vw; color: var(--myday-gold); animation: slideRightDown 10s infinite; }
+/* Highlights Section */
+.highlights-frame { grid-area: highlights; background: #000; border-top: 4px solid var(--myday-gold); display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
+.h-item { position: absolute; opacity: 0; font-size: 1.8vw; color: var(--myday-gold); animation: slideRightDown var(--bullet-loop) infinite linear; }
+
+/* --- KEYFRAMES (Re-timed for many items) --- */
+
+@keyframes feedInOut { 
+    0% { opacity: 0; transform: translateY(10px); }
+    1%, 9% { opacity: 1; transform: translateY(0); } /* Visible for about 5-6s */
+    10%, 100% { opacity: 0; } 
+}
+
+@keyframes slideRightDown { 
+    0% { opacity: 0; transform: translateX(30vw); }
+    0.5%, 4.5% { opacity: 1; transform: translateX(0); } /* Visible for about 4-5s */
+    5%, 100% { opacity: 0; } 
+}
+
+@keyframes zoomFade { 
+    0% { opacity: 0; transform: scale(1.1); } 
+    1%, 9% { opacity: 1; transform: scale(1); } /* Visible for 10s */
+    10%, 100% { opacity: 0; } 
+}
 
 @keyframes turnByTurn { 0% { opacity: 0; transform: translateY(10px); } 5%, 28% { opacity: 1; transform: translateY(0); } 33%, 100% { opacity: 0; transform: translateY(-10px); } }
 @keyframes pulseRed { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-@keyframes zoomFade { 0% { opacity: 0; transform: scale(1.1); } 5%, 45% { opacity: 1; } 50%, 100% { opacity: 0; } }
-@keyframes feedInOut { 0%, 5% { opacity: 0; } 10%, 45% { opacity: 1; } 50%, 100% { opacity: 0; } }
-@keyframes slideRightDown { 0%, 5% { opacity: 0; transform: translateX(30vw); } 10%, 45% { opacity: 1; transform: translateX(0); } 50%, 100% { opacity: 0; } }
