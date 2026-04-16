@@ -41,14 +41,14 @@ function render() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     if (!newsData) { updateNews(); requestAnimationFrame(render); return; }
 
-    // 1. BACKGROUND
+    // 1. STUDIO BACKGROUND
     const bg = ctx.createLinearGradient(0, 0, 0, 720);
     bg.addColorStop(0, "#020617");
     bg.addColorStop(1, "#0f172a");
     ctx.fillStyle = bg;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // 2. CLOCK (Top Right)
+    // 2. DIGITAL CLOCK (Top Right - Floating)
     ctx.fillStyle = "#FFD700";
     ctx.font = "bold 24px 'Courier New'";
     ctx.textAlign = "right";
@@ -95,15 +95,15 @@ function render() {
     const newsX = 460;
     const newsWidth = 780;
 
-    // TOPIC OUTSIDE THE FRAME (Above News Window)
+    // --- TOPIC & SUBTOPIC (CRITICAL: OUTSIDE THE FRAME) ---
     ctx.fillStyle = "#FFD700";
     ctx.font = "bold 42px 'Segoe UI'";
-    ctx.fillText(newsData.topic.toUpperCase(), newsX, 80);
+    ctx.fillText(newsData.topic.toUpperCase(), newsX, 80); // Placed at Y:80 (Above the Y:130 Frame)
     ctx.fillStyle = "#00d4ff";
     ctx.font = "22px 'Segoe UI'";
     ctx.fillText(newsData.subtopic || "", newsX, 110);
 
-    // THE NEWS WINDOW FRAME
+    // THE NEWS WINDOW FRAME (Y starts at 130)
     ctx.fillStyle = "rgba(255,255,255,0.02)";
     ctx.fillRect(newsX, 130, newsWidth, 430);
     ctx.strokeStyle = "rgba(255,255,255,0.1)";
@@ -117,25 +117,31 @@ function render() {
     ctx.globalAlpha = pOpacity;
     ctx.fillStyle = "#ffffff";
     ctx.font = "26px 'Segoe UI'";
-    ctx.textAlign = "center"; // ENABLE CENTER JUSTIFICATION
+    ctx.textAlign = "center"; 
     if (newsData.paragraphs && newsData.paragraphs[pIndex]) {
-        wrapTextCentered(ctx, newsData.paragraphs[pIndex], newsX + (newsWidth/2), 220, 700, 38);
+        wrapTextCentered(ctx, newsData.paragraphs[pIndex], newsX + (newsWidth/2), 240, 700, 38);
     }
     ctx.restore();
 
-    // --- 7. BULLETIN TICKER (Center-Stop & Fade) ---
+    // --- 7. THE BULLETIN (Center-Stop & Fade Out) ---
     const bY = 640;
     ctx.save();
     if (bState === "moving") {
-        bX -= 3; 
-        if (bOpacity < 1) bOpacity += 0.03;
+        bX -= 4; // Approach speed
+        if (bOpacity < 1) bOpacity += 0.04;
         if (bX <= 640) bState = "centered"; 
     } else if (bState === "centered") {
-        setTimeout(() => { bState = "exiting"; }, 4000);
+        // Stays here for 4 seconds
+        if (!this.stopTimer) {
+            this.stopTimer = setTimeout(() => { 
+                bState = "exiting"; 
+                this.stopTimer = null;
+            }, 4000);
+        }
     } else if (bState === "exiting") {
-        bOpacity -= 0.02;
+        bOpacity -= 0.02; // Fade out
         if (bOpacity <= 0) {
-            bX = 1280; 
+            bX = 1280; // Reset
             bIndex = (bIndex + 1) % (newsData.bullet_points?.length || 1);
             bState = "moving";
         }
@@ -171,7 +177,7 @@ function wrapTextCentered(context, text, x, y, maxWidth, lineHeight) {
     lines.push(line);
 
     for (let i = 0; i < lines.length; i++) {
-        context.fillText(lines[i], x, y + (i * lineHeight));
+        context.fillText(lines[i].trim(), x, y + (i * lineHeight));
     }
 }
 
