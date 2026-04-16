@@ -41,9 +41,35 @@
         }
 
         async function generate() {
-            alert("Calling AI... (Ensure Edge Function is deployed)");
-            // Function call logic here
-        }
+    const rawText = document.getElementById('aiInput').value;
+    if (!rawText) return alert("Please paste some news text first!");
+
+    const btn = document.querySelector('.btn-ai');
+    btn.textContent = "AI is thinking... 🧠";
+
+    try {
+        // This calls the "process-news" function you just created in the dashboard
+        const { data, error } = await supabase.functions.invoke('process-news', {
+            body: { text: rawText }
+        });
+
+        if (error) throw error;
+
+        // The AI sends a JSON string, we parse it to get our fields
+        const news = (typeof data === 'string') ? JSON.parse(data) : data;
+        
+        // Auto-fill the form boxes
+        document.getElementById('t').value = news.topic;
+        document.getElementById('p').value = news.paragraphs.join('\n');
+        
+        alert("AI Generation Complete!");
+    } catch (err) {
+        console.error(err);
+        alert("AI Error: Check if the Edge Function is deployed and the API Key is in Secrets.");
+    } finally {
+        btn.textContent = "Generate with AI ✨";
+    }
+}
     </script>
 </body>
 </html>
