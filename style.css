@@ -19,6 +19,7 @@ body, html {
     width: 100vw; height: 100vh; padding: 10px; background: #000; display: flex; 
 }
 
+/* --- DESKTOP LAYOUT --- */
 .broadcast-container {
     width: 100%; height: 100%;
     background: #050505; color: white;
@@ -33,7 +34,6 @@ body, html {
     overflow: hidden; position: relative;
 }
 
-/* --- Branding --- */
 .brand-frame { grid-area: brand; display: flex; align-items: center; padding-left: 3%; border-bottom: 4px solid var(--myday-gold); border-right: 1px solid #333; }
 .logo-box { display: flex; flex-direction: column; align-items: center; }
 .logo { width: 5vw; height: 5vw; background: var(--myday-gold); color: #000; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 2.2vw; border-radius: 12px; }
@@ -41,37 +41,57 @@ body, html {
 .channel-name { font-size: 2.2vw; font-weight: 900; line-height: 1.1; margin-left: 1vw; }
 .slogan { font-size: 1vw; color: var(--myday-gold); font-weight: bold; margin-top: 5px; margin-left: 1vw; }
 
-/* --- Topics & Sub-Topic --- */
 .topics-frame { grid-area: topics; background: var(--myday-blue); display: flex; align-items: center; justify-content: space-between; padding: 0 4%; border-bottom: 4px solid var(--myday-gold); }
 .main-topic { font-size: 2.5vw; margin: 0; line-height: 1; }
 .sub-topic { font-size: 1.2vw; color: var(--myday-gold); margin-top: 5px; opacity: 0.9; }
 
-/* --- Timer --- */
 .live-time-box { text-align: right; border-left: 2px solid rgba(255,255,255,0.2); padding-left: 20px; }
 #real-time { font-size: 2.5vw; font-weight: 900; color: var(--myday-gold); line-height: 1; }
 #real-date { font-size: 0.9vw; opacity: 0.8; margin-top: 5px; }
 
-/* --- Media/News/Social/Highlights --- */
 .media-frame { grid-area: media; position: relative; overflow: hidden; border-right: 2px solid #333; background: var(--studio-bg); box-shadow: inset 0 0 50px rgba(0,0,0,0.8); }
 .slide { position: absolute; inset: 10px; background-size: cover; background-position: center; opacity: 0; border-radius: 10px; border: 1px solid rgba(255,215,0,0.3); animation: imageCycle var(--img-loop) linear infinite; }
+
 .news-frame { grid-area: news; display: flex; align-items: center; justify-content: center; position: relative; padding: 3vw; }
 .p-item { position: absolute; width: 90%; font-size: 2.3vw; text-align: center; opacity: 0; animation: textCycle var(--p-loop) linear infinite; }
+
 .social-frame { grid-area: social; display: flex; align-items: center; justify-content: flex-start; padding-left: 20px; position: relative; z-index: 10; }
 .s-icon-group { position: absolute; background: var(--live-red); color: white; padding: 10px 25px; border-radius: 50px; opacity: 0; font-weight: bold; font-size: 1.2vw; box-shadow: 0 4px 15px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); animation: socialCycle var(--s-loop) linear infinite; }
+
 .highlights-frame { grid-area: highlights; background: #000; border-top: 4px solid var(--myday-gold); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
 .h-item { position: absolute; color: var(--myday-gold); font-size: 2vw; opacity: 0; animation: bulletCycle var(--h-loop) linear infinite; white-space: nowrap; }
 
-/* --- MOBILE AUTOMATIC ADAPTER --- */
+/* --- MOBILE CENTERED NEWS ADAPTER --- */
 @media (max-width: 1024px) {
+    .broadcast-outer-frame { padding: 0; }
     .broadcast-container {
-        grid-template-areas: "brand" "topics" "media" "news" "social" "highlights";
-        grid-template-columns: 1fr; grid-template-rows: 15% 12% 30% 1fr 8% 8%; border-radius: 0; border: none;
+        grid-template-areas: 
+            "brand"
+            "topics"
+            "news"     /* NEWS IS NOW IN THE CENTER */
+            "media"
+            "social"
+            "highlights";
+        grid-template-columns: 1fr;
+        grid-template-rows: 15% 12% 1fr 25% 8% 8%; /* Central News gets the most space */
+        border-radius: 0; border: none;
     }
-    .logo { width: 12vw; height: 12vw; font-size: 6vw; }
-    .channel-name { font-size: 5vw; }
-    .main-topic { font-size: 5vw; }
-    .sub-topic { font-size: 3vw; }
-    .p-item { font-size: 5.5vw; }
+
+    .logo { width: 14vw; height: 14vw; font-size: 6vw; }
+    .channel-name { font-size: 5.5vw; }
+    .main-topic { font-size: 6vw; text-align: center; }
+    .sub-topic { font-size: 3.5vw; text-align: center; }
+
+    .news-frame { padding: 40px 20px; border-bottom: 1px solid #222; }
+    .p-item { font-size: 6vw; width: 95%; font-weight: bold; }
+
+    .media-frame { border-right: none; border-bottom: 2px solid #333; height: 100%; }
+    .slide { inset: 5px; }
+
+    .social-frame { justify-content: center; padding-left: 0; }
+    .s-icon-group { font-size: 4.5vw; padding: 8px 25px; }
+    
+    .h-item { font-size: 5vw; }
 }
 
 /* Animations */
