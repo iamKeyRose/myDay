@@ -6,9 +6,9 @@
 :root {
     --myday-gold: #FFD700;
     --myday-blue: #002B5B;
-    --live-red: #cc0000;
-    --glow: 0 0 20px rgba(255, 215, 0, 0.4);
+    --live-red: #ff0000;
     --cycle-speed: 12s;
+    --social-speed: 15s; /* Total duration for one full social loop */
 }
 
 * { box-sizing: border-box; }
@@ -36,85 +36,89 @@ body, html {
         "media news news"
         "social highlights highlights";
     grid-template-columns: 32% 1fr 1fr;
-    grid-template-rows: 18% 1fr 15%;
+    grid-template-rows: 20% 1fr 15%; /* Height adjusted for logo space */
     border: 3px solid #333;
     border-radius: 20px;
     overflow: hidden;
     box-shadow: 0 0 60px rgba(0,0,0,1);
 }
 
-/* --- BRANDING & LIVE --- */
-.brand-frame { grid-area: brand; background: #000; display: flex; align-items: center; padding: 0 5%; border-bottom: 4px solid var(--myday-gold); border-right: 1px solid #333; position: relative; }
-.live-indicator { position: absolute; top: 15px; left: 20px; background: var(--live-red); color: white; padding: 2px 10px; border-radius: 4px; font-size: 0.7vw; font-weight: bold; animation: pulseRed 1.5s infinite; letter-spacing: 1px; }
-.logo { width: 4.5vw; height: 4.5vw; background: var(--myday-gold); color: black; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.8vw; border-radius: 12px; animation: glowPulse 3s infinite; }
-.brand-text { margin-left: 1.5vw; font-size: 1.8vw; font-weight: 800; }
+/* --- BRANDING & LIVE BELOW LOGO --- */
+.brand-frame { 
+    grid-area: brand; background: #000; 
+    display: flex; flex-direction: column; /* Stack vertically */
+    align-items: center; justify-content: center;
+    border-bottom: 4px solid var(--myday-gold); border-right: 1px solid #333; 
+}
+.logo { 
+    width: 5vw; height: 5vw; background: var(--myday-gold); color: black; 
+    display: flex; align-items: center; justify-content: center; 
+    font-weight: 900; font-size: 2vw; border-radius: 12px; 
+    animation: glowPulse 3s infinite; 
+}
+.live-indicator { 
+    margin-top: 10px; background: var(--live-red); color: white; 
+    padding: 2px 12px; border-radius: 4px; font-size: 0.8vw; 
+    font-weight: bold; animation: pulseRed 1.5s infinite; letter-spacing: 2px;
+}
 
 /* --- TOPICS --- */
-.topics-frame { grid-area: topics; background: var(--myday-blue); display: flex; flex-direction: column; justify-content: center; padding-left: 5%; border-bottom: 4px solid var(--myday-gold); }
+.topics-frame { 
+    grid-area: topics; background: var(--myday-blue); 
+    display: flex; flex-direction: column; justify-content: center; 
+    padding-left: 5%; border-bottom: 4px solid var(--myday-gold); 
+}
 .main-topic { font-size: 3vw; margin: 0; }
 .sub-topic { font-size: 1.2vw; color: var(--myday-gold); margin: 0; font-style: italic; }
 
 /* --- MEDIA --- */
 .media-frame { grid-area: media; position: relative; background: #111; overflow: hidden; border-right: 1px solid #333; }
 .slide { position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0; animation: zoomFade 20s infinite; }
-.meta-note { position: absolute; bottom: 8%; left: 5%; background: rgba(0,0,0,0.85); padding: 0.8vw; border-left: 4px solid var(--myday-gold); font-size: 0.8vw; z-index: 5; }
 
-/* --- NEWS --- */
+/* --- NEWS FEED --- */
 .news-frame { grid-area: news; display: flex; align-items: center; justify-content: center; position: relative; padding: 2vw; }
 .p-item { position: absolute; opacity: 0; font-size: 2.2vw; text-align: center; width: 85%; animation: feedInOut var(--cycle-speed) infinite; line-height: 1.4; }
 
-/* --- ANIMATED SOCIAL FRAME --- */
+/* --- TURN BY TURN SOCIAL ENGAGEMENT --- */
 .social-frame { 
     grid-area: social; background: var(--live-red); 
-    display: flex; align-items: center; justify-content: space-around; 
-    padding: 0 10px; border-top: 1px solid rgba(255,255,255,0.2);
+    display: flex; align-items: center; justify-content: center; 
+    position: relative; border-top: 1px solid rgba(255,255,255,0.2);
 }
 
 .s-icon-group { 
-    display: flex; flex-direction: column; align-items: center; 
-    color: white; font-size: 0.7vw; font-weight: bold;
+    position: absolute; display: flex; align-items: center; gap: 15px;
+    color: white; font-size: 1.5vw; font-weight: bold;
     opacity: 0; transform: translateY(20px);
-    animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    animation: turnByTurn var(--social-speed) infinite;
 }
 
-/* Staggered Entrance for Icons */
-.s-icon-group:nth-child(1) { animation-delay: 0.2s; }
-.s-icon-group:nth-child(2) { animation-delay: 0.4s; }
-.s-icon-group:nth-child(3) { animation-delay: 0.6s; }
-.s-icon-group:nth-child(4) { animation-delay: 0.8s; }
-.s-icon-group:nth-child(5) { animation-delay: 1.0s; }
+/* Timings for Turn by Turn display */
+.s-icon-group:nth-child(1) { animation-delay: 0s; }
+.s-icon-group:nth-child(2) { animation-delay: 3s; }
+.s-icon-group:nth-child(3) { animation-delay: 6s; }
+.s-icon-group:nth-child(4) { animation-delay: 9s; }
+.s-icon-group:nth-child(5) { animation-delay: 12s; }
 
-.s-icon-group svg { 
-    width: 2vw; height: 2vw; fill: white; margin-bottom: 4px; 
-    transition: transform 0.3s ease, filter 0.3s ease;
-    filter: drop-shadow(0 0 5px rgba(255,255,255,0.2));
-    animation: iconPulse 4s infinite ease-in-out;
-}
-
-/* Hover Engagement */
-.s-icon-group:hover svg {
-    transform: scale(1.3) translateY(-5px);
-    filter: drop-shadow(0 0 15px white);
-}
+.s-icon-group svg { width: 3vw; height: 3vw; fill: white; filter: drop-shadow(0 0 10px rgba(255,255,255,0.4)); }
 
 /* --- TICKER --- */
 .highlights-frame { grid-area: highlights; background: #000; border-top: 4px solid var(--myday-gold); display: flex; align-items: center; justify-content: center; overflow: hidden; }
 .h-item { position: absolute; opacity: 0; font-size: 1.8vw; color: var(--myday-gold); animation: slideRightDown 10s infinite; }
 
-/* ANIMATION KEYFRAMES */
-@keyframes popIn {
-    to { opacity: 1; transform: translateY(0); }
+/* --- KEYFRAMES --- */
+@keyframes turnByTurn {
+    0% { opacity: 0; transform: translateY(20px); }
+    5% { opacity: 1; transform: translateY(0); }
+    15% { opacity: 1; transform: translateY(0); }
+    20% { opacity: 0; transform: translateY(-20px); }
+    100% { opacity: 0; }
 }
 
-@keyframes iconPulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-}
-
-@keyframes pulseRed { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(1.05); } }
+@keyframes pulseRed { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 @keyframes glowPulse { 0%, 100% { box-shadow: 0 0 10px var(--myday-gold); } 50% { box-shadow: 0 0 30px var(--myday-gold); } }
-@keyframes zoomFade { 0% { opacity: 0; transform: scale(1.2); } 5%, 45% { opacity: 1; } 50%, 100% { opacity: 0; } }
-@keyframes feedInOut { 0%, 5% { opacity: 0; transform: scale(0.95); } 10%, 45% { opacity: 1; transform: scale(1); } 50%, 100% { opacity: 0; } }
+@keyframes zoomFade { 0% { opacity: 0; transform: scale(1.1); } 5%, 45% { opacity: 1; } 50%, 100% { opacity: 0; } }
+@keyframes feedInOut { 0%, 5% { opacity: 0; } 10%, 45% { opacity: 1; } 50%, 100% { opacity: 0; } }
 @keyframes slideRightDown { 0%, 5% { opacity: 0; transform: translateX(30vw); } 10%, 45% { opacity: 1; transform: translateX(0); } 50%, 100% { opacity: 0; } }
 
 </style>
@@ -125,9 +129,8 @@ body, html {
     <div class="broadcast-container">
         
         <div class="brand-frame">
-            <div class="live-indicator">LIVE</div>
             <div class="logo">የእኔ</div>
-            <div class="brand-text">የእኔ<span style="color:var(--myday-gold)">ቀን</span> ዜና</div>
+            <div class="live-indicator">LIVE</div>
         </div>
 
         <div class="topics-frame">
@@ -136,7 +139,6 @@ body, html {
         </div>
 
         <div class="media-frame">
-            <div class="meta-note">ባለቤት: ቴዲ አፍሮ | ምንጭ: የእኔ ቀን መረጃ</div>
             <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1523810192022-5a0fb9aa7bc8?w=800');"></div>
             <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800'); animation-delay: 10s;"></div>
         </div>
