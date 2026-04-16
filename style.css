@@ -21,7 +21,7 @@ body, html {
 
 .broadcast-outer-frame { 
     width: 100vw; height: 100vh; 
-    padding: 10px; /* Safety padding */
+    padding: 10px; 
     background: #000; 
     display: flex;
 }
@@ -39,7 +39,7 @@ body, html {
     border: 3px solid #333; 
     border-radius: 25px;
     overflow: hidden;
-    position: relative; /* Keeps all absolute items inside */
+    position: relative;
 }
 
 /* --- Header Section --- */
@@ -65,17 +65,19 @@ body, html {
     align-items: center; justify-content: space-between; padding: 0 5%; 
     border-bottom: 4px solid var(--myday-gold); 
 }
-.main-topic { font-size: 2.8vw; margin: 0; }
-#real-time { font-size: 2.2vw; font-weight: 900; color: var(--myday-gold); }
+.main-topic { font-size: 2.5vw; margin: 0; }
+#real-time { font-size: 2vw; font-weight: 900; color: var(--myday-gold); }
 
-/* --- News Paragraphs --- */
+/* --- News Paragraphs (Corrected for "Black Icons") --- */
 .news-frame { 
     grid-area: news; display: flex; align-items: center; justify-content: center; 
     position: relative; padding: 3vw; background: #050505; 
 }
 .p-item { 
     position: absolute; width: 90%; font-size: 2.3vw; text-align: center; 
-    opacity: 0; animation: textCycle var(--p-loop) linear infinite; line-height: 1.4; 
+    opacity: 0 !important; /* Forces initial hide */
+    animation: textCycle var(--p-loop) linear infinite forwards; 
+    line-height: 1.4; 
 }
 
 /* --- Highlights (Bottom Bar) --- */
@@ -85,7 +87,9 @@ body, html {
 }
 .h-item { 
     position: absolute; color: var(--myday-gold); font-size: 2vw; 
-    opacity: 0; animation: bulletCycle var(--h-loop) linear infinite; white-space: nowrap; 
+    opacity: 0 !important; 
+    animation: bulletCycle var(--h-loop) linear infinite forwards; 
+    white-space: nowrap; 
 }
 
 /* --- Media --- */
@@ -97,35 +101,46 @@ body, html {
     opacity: 0; animation: imageCycle var(--img-loop) linear infinite; 
 }
 
-/* --- SOCIAL PILL --- */
+/* --- SOCIAL ENGAGEMENT (RUNNING ONE BY ONE) --- */
 .social-frame { 
     grid-area: social; display: flex; align-items: center; 
     justify-content: flex-start; padding-left: 20px; background: #000;
+    position: relative;
 }
-.s-pill-bg {
-    background: var(--live-red); display: flex; align-items: center; 
-    padding: 6px 20px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.2);
-    position: relative; width: 16vw; height: 45px; overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-}
+
 .s-icon-group { 
-    position: absolute; left: 20px; color: white; font-size: 1.1vw; 
-    font-weight: bold; opacity: 0; display: flex; align-items: center; 
-    width: 100%; animation: socialCycle var(--s-loop) linear infinite; 
+    position: absolute; 
+    background: var(--live-red); 
+    color: white; 
+    font-size: 1.1vw; 
+    font-weight: bold; 
+    opacity: 0; 
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 20px;
+    border-radius: 50px;
+    border: 1px solid rgba(255,255,255,0.2);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    animation: socialCycle var(--s-loop) linear infinite;
+}
+
+.s-icon-group svg {
+    width: 1.5vw;
+    height: 1.5vw;
+    fill: white;
 }
 
 /* --- Keyframes --- */
 @keyframes textCycle {
-    0% { opacity: 0; transform: translateY(15px); }
-    0.5% { opacity: 1; transform: translateY(0); }
-    8% { opacity: 1; transform: translateY(0); } 
+    0%, 0.5% { opacity: 0; transform: translateY(15px); }
+    1%, 8% { opacity: 1; transform: translateY(0); } 
     8.5%, 100% { opacity: 0; transform: translateY(-15px); } 
 }
 
 @keyframes bulletCycle {
-    0% { opacity: 0; transform: translateX(50px); }
-    0.5% { opacity: 1; transform: translateX(0); }
-    3.8% { opacity: 1; transform: translateX(0); }
+    0%, 0.5% { opacity: 0; transform: translateX(50px); }
+    1%, 3.8% { opacity: 1; transform: translateX(0); }
     4.3%, 100% { opacity: 0; transform: translateX(-50px); }
 }
 
@@ -136,9 +151,8 @@ body, html {
 }
 
 @keyframes imageCycle {
-    0% { opacity: 0; transform: scale(1.1); }
-    1% { opacity: 1; transform: scale(1); }
-    9% { opacity: 1; transform: scale(1); }
+    0%, 1% { opacity: 0; transform: scale(1.1); }
+    2%, 9% { opacity: 1; transform: scale(1); }
     10%, 100% { opacity: 0; }
 }
 
