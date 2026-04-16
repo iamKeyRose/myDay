@@ -1,78 +1,72 @@
-function updateEngine() {
-    const savedData = localStorage.getItem('newsData');
-    if (!savedData) return;
-    const data = JSON.parse(savedData);
+// 1. SUPABASE CONNECTION
+const SUPABASE_URL = 'https://hghgifkleqhdeqpoqjln.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_4qkd_gYISl4j_s90SqNQ1w_6nfWRcrd'; 
+const supabase = lib.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // 1. Topics (RESTORED SUB-TOPIC LOGIC)
-    const mainTopic = document.querySelector('.main-topic');
-    const subTopic = document.querySelector('.sub-topic');
-    if(data.topic && mainTopic) mainTopic.textContent = data.topic;
-    if(data.subtopic && subTopic) subTopic.textContent = data.subtopic;
+const canvas = document.getElementById('newsCanvas');
+const ctx = canvas.getContext('2d');
 
-    // 2. News
-    const newsContainer = document.getElementById('news-container');
-    if (data.paragraphs && newsContainer) {
-        newsContainer.innerHTML = ''; 
-        data.paragraphs.forEach((p, index) => {
-            const div = document.createElement('div');
-            div.className = 'p-item';
-            div.style.animationDelay = (index * 6) + 's'; 
-            div.textContent = p;
-            newsContainer.appendChild(div);
-        });
-    }
+let newsData = null;
+let bgImage = new Image();
 
-    // 3. Highlights
-    const bulletContainer = document.getElementById('highlights-container');
-    if (data.bullets && bulletContainer) {
-        bulletContainer.innerHTML = '';
-        data.bullets.forEach((b, index) => {
-            const div = document.createElement('div');
-            div.className = 'h-item';
-            div.style.animationDelay = (index * 5) + 's';
-            div.textContent = `• ${b}`;
-            bulletContainer.appendChild(div);
-        });
-    }
+// 2. FETCH ACTIVE NEWS
+async function loadActiveNews() {
+    const { data, error } = await supabase
+        .from('news_items')
+        .select('*')
+        .eq('is_active', true)
+        .maybeSingle();
 
-    // 4. Media
-    const mediaContainer = document.getElementById('media-container');
-    if (data.images && mediaContainer) {
-        mediaContainer.innerHTML = '';
-        data.images.forEach((img, index) => {
-            const div = document.createElement('div');
-            div.className = 'slide';
-            div.style.backgroundImage = `url('${img}')`;
-            div.style.animationDelay = (index * 10) + 's';
-            mediaContainer.appendChild(div);
-        });
-    }
-
-    // 5. Social Engagement
-    const socialContainer = document.getElementById('social-container');
-    if (socialContainer) {
-        socialContainer.innerHTML = '';
-        const socials = (data.socials && data.socials.length > 0) ? data.socials : ["የእኔ ቀን", "Like & Subscribe", "Follow Us"];
-        socials.forEach((s, index) => {
-            const div = document.createElement('div');
-            div.className = 's-icon-group';
-            div.style.animationDelay = (index * 5) + 's';
-            div.innerHTML = `<span>${s}</span>`;
-            socialContainer.appendChild(div);
-        });
+    if (data) {
+        newsData = data;
+        if (data.images && data.images.length > 0) {
+            bgImage.src = data.images[0];
+            bgImage.onload = () => drawFrame();
+        }
+        document.getElementById('ticker-text').textContent = data.bullets.join(' • ');
+        drawFrame();
     }
 }
 
-window.addEventListener('storage', (e) => { if (e.key === 'newsData') updateEngine(); });
+// 3. DRAW TO CANVAS
+function drawFrame() {
+    if (!newsData) return;
 
-function updateClock() {
-    const now = new Date();
-    const timeEl = document.getElementById('real-time');
-    const dateEl = document.getElementById('real-date');
-    if(timeEl) timeEl.textContent = now.toLocaleTimeString('am-ET', {hour12: false});
-    if(dateEl) dateEl.textContent = now.toLocaleDateString('am-ET', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+    // Background
+    ctx.fillStyle = "#050505";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Image Frame
+    if (bgImage.complete) {
+        ctx.drawImage(bgImage, 50, 50, 500, 620); 
+    }
+
+    // Text Overlay Logic
+    ctx.fillStyle = "#FFD700";
+    ctx.font = "bold 50px Nyala";
+    ctx.fillText(newsData.topic, 600, 100);
+
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "30px Nyala";
+    let y = 180;
+    newsData.paragraphs.forEach(p => {
+        // Basic line wrap (simplification)
+        ctx.fillText(p.substring(0, 50), 600, y);
+        y += 45;
+    });
 }
 
-setInterval(updateClock, 1000);
-updateClock();
-updateEngine();
+// 4. REAL-TIME LISTENER
+supabase
+    .channel('news_changes')
+    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'news_items' }, payload => {
+        if (payload.new.is_active) {
+            newsData = payload.new;
+            bgImage.src = newsData.images[0];
+            document.getElementById('ticker-text').textContent = newsData.bullets.join(' • ');
+            drawFrame();
+        }
+    })
+    .subscribe();
+
+loadActiveNews();
