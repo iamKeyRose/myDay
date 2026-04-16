@@ -3,46 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>የእኔ ቀን - Live News</title>
-    <link rel="stylesheet" href="./style.css">
+    <title>የእኔ ቀን - Canvas Live</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-<div class="broadcast-outer-frame">
-    <div class="broadcast-container">
-        
-        <div class="brand-frame">
-            <div class="logo-box">
-                <div class="logo">የእኔ</div>
-                <div class="live-indicator">LIVE</div>
-            </div>
-            <div class="channel-info">
+    <div class="broadcast-outer-frame">
+        <div class="broadcast-container">
+            <div class="brand-frame">
+                <div class="logo-box">
+                    <div class="logo">የእኔ</div>
+                    <div class="live-indicator">LIVE</div>
+                </div>
                 <div class="channel-name">የእኔ ቀን ዜና</div>
-                <div class="slogan">እውነተኛ መረጃ ለሁላችንም!</div>
+            </div>
+
+            <div class="canvas-area">
+                <canvas id="newsCanvas" width="1280" height="720"></canvas>
+            </div>
+
+            <div class="highlights-frame">
+                <div id="ticker-wrap">
+                    <span id="ticker-text">መረጃ እየጠበቅን ነው...</span>
+                </div>
             </div>
         </div>
-
-        <div class="topics-frame">
-            <div class="topics-text">
-                <h1 class="main-topic" id="main-topic-text">መረጃ እየጠበቅን ነው...</h1>
-                <div class="sub-topic" id="sub-topic-text">ዝርዝር መረጃ</div>
-            </div>
-            <div class="live-time-box">
-                <div id="real-time">00:00:00</div>
-                <div id="real-date">Loading Date...</div>
-            </div>
-        </div>
-
-        <div class="media-frame" id="media-container"></div>
-
-        <div class="news-frame" id="news-container"></div>
-
-        <div class="social-frame" id="social-container"></div>
-
-        <div class="highlights-frame" id="highlights-container"></div>
     </div>
-</div>
-
-<script src="./script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
