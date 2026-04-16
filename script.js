@@ -1,82 +1,105 @@
-const { createClient } = window.supabase;
+\const { createClient } = window.supabase;
 const _supabase = createClient('https://hghgifkleqhdeqpoqjln.supabase.co', 'sb_publishable_4qkd_gYISl4j_s90SqNQ1w_6nfWRcrd');
 
 const canvas = document.getElementById('newsCanvas');
 const ctx = canvas.getContext('2d');
 
-// --- Motion Variables ---
+// State Management
 let newsData = { topic: "በመጠበቅ ላይ...", subtopic: "", paragraphs: [], bullet_points: [] };
-let scrollY = 0;           // Controls the vertical crawl
-let scanlinePos = 0;       // Controls the background line
-let tickerX = 0;           // Controls the footer ticker (if drawn on canvas)
+let scrollY = 0;
+let scanlineY = 0;
 
+// Config
 const LOGO_TEXT = "የእኔ";
 const SLOGAN = "እውነተኛ መረጃ ለሁላችንም!";
 
 async function updateNews() {
-    try {
-        const { data, error } = await _supabase
-            .from('news_items')
-            .select('topic, subtopic, paragraphs, bullet_points')
-            .eq('is_active', true)
-            .order('created_at', { ascending: false })
-            .limit(1).single();
+    const { data, error } = await _supabase
+        .from('news_items')
+        .select('topic, subtopic, paragraphs, bullet_points')
+        .eq('is_active', true)
+        .order('created_at', { ascending: false })
+        .limit(1).single();
 
-        if (data && !error) {
-            // Only reset if new news arrives
-            if (newsData.topic !== data.topic) {
-                scrollY = 0; 
-                newsData = data;
-            }
-            const ticker = document.getElementById('ticker-text');
-            if(ticker) ticker.innerText = `ሰበር ዜና: ${data.topic} — ${data.subtopic} — `;
-        }
-    } catch (e) { console.error(e); }
+    if (data && !error) {
+        if (newsData.topic !== data.topic) scrollY = 0; // Reset scroll for new news
+        newsData = data;
+        const ticker = document.getElementById('ticker-text');
+        if(ticker) ticker.innerText = `ሰበር ዜና: ${data.topic} — ${data.subtopic} — `;
+    }
+}
+
+function drawAtmosphere() {
+    // 1. Radial Background
+    const grad = ctx.createRadialGradient(640, 360, 50, 640, 360, 800);
+    grad.addColorStop(0, "#1c1e2e");
+    grad.addColorStop(1, "#0a0a0f");
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // 2. Animated Scanline
+    scanlineY = (scanlineY + 1.5) % canvas.height;
+    ctx.strokeStyle = "rgba(255, 215, 0, 0.05)";
+    ctx.beginPath();
+    ctx.moveTo(0, scanlineY);
+    ctx.lineTo(canvas.width, scanlineY);
+    ctx.stroke();
+
+    // 3. Tech Corner Accents
+    ctx.strokeStyle = "#FFD700";
+    ctx.lineWidth = 2;
+    // Top Left
+    ctx.strokeRect(10, 10, 50, 50);
+    // Bottom Right
+    ctx.strokeRect(canvas.width - 60, canvas.height - 60, 50, 50);
 }
 
 function render() {
-    // 1. Clear Screen
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawAtmosphere();
 
-    // 2. Background & Atmosphere
-    const bgGrad = ctx.createRadialGradient(640, 360, 50, 640, 360, 800);
-    bgGrad.addColorStop(0, "#1c1e2e");
-    bgGrad.addColorStop(1, "#0a0a0f");
-    ctx.fillStyle = bgGrad;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // Moving Scanline
-    scanlinePos = (scanlinePos + 1) % canvas.height;
-    ctx.strokeStyle = "rgba(255, 215, 0, 0.03)";
-    ctx.strokeRect(0, scanlinePos, canvas.width, 1);
-
-    // 3. Branding Stack
+    // --- 1. HEADER & BRANDING ZONE ---
+    
+    // Logo Group (Left Side)
     ctx.fillStyle = "#FFD700";
-    ctx.font = "bold 65px 'Segoe UI'";
-    ctx.fillText(LOGO_TEXT, 45, 90);
+    ctx.font = "bold 60px 'Segoe UI'";
+    ctx.fillText(LOGO_TEXT, 40, 85);
+    
     ctx.fillStyle = "#ffffff";
     ctx.font = "14px 'Segoe UI'";
-    ctx.fillText(SLOGAN, 45, 115);
+    ctx.fillText(SLOGAN, 40, 110);
 
-    // Live Indicator
+    // Live Icon (Bottom of Logo)
     ctx.fillStyle = "#ff0000";
-    ctx.beginPath(); ctx.arc(55, 140, 7, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath();
+    ctx.arc(48, 135, 6, 0, Math.PI * 2);
+    ctx.fill();
     ctx.fillStyle = "#ffffff";
-    ctx.font = "bold 16px 'Segoe UI'";
-    ctx.fillText("LIVE", 70, 146);
+    ctx.font = "bold 14px 'Segoe UI'";
+    ctx.fillText("LIVE", 62, 140);
 
-    // Topic & Subtopic
+    // Topic & Subtopic (Right of Logo)
     ctx.fillStyle = "#FFD700";
     ctx.font = "bold 48px 'Segoe UI'";
-    ctx.fillText(newsData.topic, 250, 90);
-    ctx.fillStyle = "#00d4ff";
-    ctx.font = "24px 'Segoe UI'";
-    ctx.fillText(newsData.subtopic || "", 250, 128);
+    ctx.fillText(newsData.topic, 240, 85);
 
-    // 4. THE ENGINE: Scrolling Narrative (Left Column)
+    ctx.fillStyle = "#00d4ff";
+    ctx.font = "22px 'Segoe UI'";
+    ctx.fillText(newsData.subtopic || "", 240, 120);
+
+    // Digital Clock (Top Right)
+    ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+    ctx.font = "30px 'Courier New'";
+    const timeStr = new Date().toLocaleTimeString('en-GB');
+    ctx.fillText(timeStr, canvas.width - 180, 75);
+
+
+    // --- 2. CONTENT SPLIT ---
+
+    // LEFT COLUMN: Narrative (10 Paragraphs with Auto-Scroll)
     ctx.save();
     ctx.beginPath();
-    ctx.rect(40, 180, 620, 500); // Mask area
+    ctx.rect(40, 180, 600, 500); // Clipping mask area
     ctx.clip();
 
     ctx.fillStyle = "#ffffff";
@@ -84,45 +107,44 @@ function render() {
     let currentY = 220 - scrollY;
 
     if (newsData.paragraphs) {
-        newsData.paragraphs.forEach(para => {
-            currentY = wrapText(ctx, para, 50, currentY, 560, 32) + 25;
+        newsData.paragraphs.forEach(p => {
+            currentY = wrapText(ctx, p, 50, currentY, 550, 30) + 25;
         });
     }
     
-    // THE "RUNNING" PART: Increment Scroll
-    scrollY += 0.6; 
-    if (scrollY > currentY + 300) scrollY = -400; // Reset loop when text finishes
+    // Increment scroll
+    scrollY += 0.5;
+    if (scrollY > currentY + 100) scrollY = -400; // Reset scroll loop
     ctx.restore();
 
-    // 5. Highlights (Right Column)
-    ctx.fillStyle = "rgba(255, 255, 255, 0.08)";
-    ctx.fillRect(680, 180, 560, 505);
-    ctx.strokeStyle = "rgba(255, 215, 0, 0.3)";
-    ctx.strokeRect(680, 180, 560, 505);
+
+    // RIGHT COLUMN: Highlights (Glass-morphism Box)
+    ctx.fillStyle = "rgba(255, 255, 255, 0.07)";
+    ctx.fillRect(680, 180, 560, 500);
+    ctx.strokeStyle = "rgba(255, 215, 0, 0.4)";
+    ctx.strokeRect(680, 180, 560, 500);
 
     ctx.fillStyle = "#FFD700";
-    ctx.font = "bold 24px 'Segoe UI'";
-    ctx.fillText("ቁልፍ መረጃዎች", 710, 220);
+    ctx.font = "bold 22px 'Segoe UI'";
+    ctx.fillText("ቁልፍ መረጃዎች (Key Highlights)", 710, 220);
 
-    let bY = 265;
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "18px 'Segoe UI'";
+    let bulletY = 265;
     if (newsData.bullet_points) {
-        newsData.bullet_points.forEach((bullet, index) => {
-            // Check if bullet is within box height
-            if (bY < 650) {
-                ctx.fillStyle = "#FFD700";
-                ctx.fillText("✦", 710, bY);
-                ctx.fillStyle = "#ffffff";
-                ctx.font = "18px 'Segoe UI'";
-                ctx.fillText(bullet, 740, bY);
-                bY += 33;
-            }
+        newsData.bullet_points.slice(0, 13).forEach(b => {
+            ctx.fillStyle = "#FFD700";
+            ctx.fillText("✦", 710, bulletY);
+            ctx.fillStyle = "#ffffff";
+            ctx.fillText(b, 740, bulletY);
+            bulletY += 33;
         });
     }
 
-    // 6. Loop the Render
     requestAnimationFrame(render);
 }
 
+// Wrap Text Helper
 function wrapText(context, text, x, y, maxWidth, lineHeight) {
     let words = text.split(' ');
     let line = '';
@@ -139,6 +161,6 @@ function wrapText(context, text, x, y, maxWidth, lineHeight) {
 }
 
 // Initializers
-setInterval(updateNews, 5000); 
+setInterval(updateNews, 5000);
 updateNews();
-render(); // Start the animation loop
+render();
