@@ -2,37 +2,77 @@
     --myday-gold: #FFD700;
     --myday-blue: #002B5B;
     --live-red: #ff0000;
-    --p-loop: 60s; --h-loop: 100s; --img-loop: 100s; --s-loop: 15s;
+    /* Animation Loop Timings */
+    --p-loop: 60s;    /* 10 paragraphs * 6s */
+    --h-loop: 100s;   /* 20 bullets * 5s */
+    --img-loop: 100s; /* 10 images * 10s */
+    --s-loop: 15s;    /* 3 social handles * 5s */
 }
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body, html { width: 100%; height: 100%; background: #000; overflow: hidden; display: flex; justify-content: center; align-items: center; font-family: 'Nyala', sans-serif; }
-.broadcast-outer-frame { width: 100vw; height: 100vh; padding: 10px; background: #000; display: flex; }
-.broadcast-container {
-    width: 100%; height: 100%; background: #050505; color: white;
-    display: grid; grid-template-areas: "brand topics topics" "media news news" "social highlights highlights";
-    grid-template-columns: 32% 1fr 1fr; grid-template-rows: 20% 1fr 12%;
-    border: 3px solid #333; border-radius: 25px; overflow: hidden; position: relative;
+
+body, html { 
+    width: 100%; height: 100%; 
+    background: #000; overflow: hidden; 
+    display: flex; justify-content: center; align-items: center; 
+    font-family: 'Nyala', sans-serif; 
 }
+
+.broadcast-outer-frame { 
+    width: 100vw; height: 100vh; padding: 10px; background: #000; display: flex; 
+}
+
+.broadcast-container {
+    width: 100%; height: 100%;
+    background: #050505; color: white;
+    display: grid;
+    grid-template-areas: 
+        "brand topics topics" 
+        "media news news" 
+        "social highlights highlights";
+    grid-template-columns: 32% 1fr 1fr;
+    grid-template-rows: 20% 1fr 12%;
+    border: 3px solid #333; border-radius: 25px; /* Beveled Corners */
+    overflow: hidden; position: relative;
+}
+
+/* --- Branding --- */
 .brand-frame { grid-area: brand; display: flex; align-items: center; padding-left: 5%; border-bottom: 4px solid var(--myday-gold); border-right: 1px solid #333; }
 .logo { width: 4vw; height: 4vw; background: var(--myday-gold); color: #000; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.8vw; border-radius: 10px; }
 .live-indicator { background: var(--live-red); color: #fff; padding: 2px 8px; border-radius: 5px; font-size: 0.7vw; animation: pulse 1.5s infinite; text-align: center; }
+
+/* --- Topic Bar --- */
 .topics-frame { grid-area: topics; background: var(--myday-blue); display: flex; align-items: center; justify-content: space-between; padding: 0 5%; border-bottom: 4px solid var(--myday-gold); }
 .main-topic { font-size: 2.5vw; }
 #real-time { font-size: 2vw; font-weight: 900; color: var(--myday-gold); }
+
+/* --- Media Slideshow --- */
 .media-frame { grid-area: media; position: relative; overflow: hidden; border-right: 1px solid #333; background: #000; }
 .slide { position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0; animation: imageCycle var(--img-loop) linear infinite; }
+
+/* --- News Paragraphs (Gap at 8.5% prevents Slide 3 overlap) --- */
 .news-frame { grid-area: news; display: flex; align-items: center; justify-content: center; position: relative; padding: 3vw; }
 .p-item { position: absolute; width: 90%; font-size: 2.2vw; text-align: center; opacity: 0; animation: textCycle var(--p-loop) linear infinite; }
+
+/* --- Social Pill (Professional Floating Badge) --- */
 .social-frame { grid-area: social; display: flex; align-items: center; justify-content: flex-start; padding-left: 20px; position: relative; }
 .s-icon-group { 
     position: absolute; background: var(--live-red); color: white; padding: 8px 20px; border-radius: 50px; 
-    opacity: 0; font-weight: bold; font-size: 1vw; box-shadow: 0 4px 15px rgba(0,0,0,0.4); animation: socialCycle var(--s-loop) linear infinite;
+    opacity: 0; font-weight: bold; font-size: 1.1vw; box-shadow: 0 4px 15px rgba(0,0,0,0.4); 
+    border: 1px solid rgba(255,255,255,0.2); animation: socialCycle var(--s-loop) linear infinite;
 }
+
+/* --- Ticker/Highlights --- */
 .highlights-frame { grid-area: highlights; background: #000; border-top: 4px solid var(--myday-gold); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
 .h-item { position: absolute; color: var(--myday-gold); font-size: 1.8vw; opacity: 0; animation: bulletCycle var(--h-loop) linear infinite; }
 
+/* --- Precision Animations --- */
 @keyframes textCycle { 0%, 1% { opacity: 0; } 2%, 8.5% { opacity: 1; } 9.5%, 100% { opacity: 0; } }
 @keyframes bulletCycle { 0%, 1% { opacity: 0; } 2%, 4% { opacity: 1; } 5%, 100% { opacity: 0; } }
-@keyframes socialCycle { 0%, 1% { opacity: 0; transform: translateY(10px); } 5%, 28% { opacity: 1; transform: translateY(0); } 33%, 100% { opacity: 0; transform: translateY(-10px); } }
+@keyframes socialCycle { 
+    0%, 1% { opacity: 0; transform: translateY(10px); } 
+    5%, 28% { opacity: 1; transform: translateY(0); } 
+    33%, 100% { opacity: 0; transform: translateY(-10px); } 
+}
 @keyframes imageCycle { 0%, 1% { opacity: 0; } 2%, 9.5% { opacity: 1; } 10%, 100% { opacity: 0; } }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
