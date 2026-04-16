@@ -1,150 +1,127 @@
-\const { createClient } = window.supabase;
+const { createClient } = window.supabase;
 const _supabase = createClient('https://hghgifkleqhdeqpoqjln.supabase.co', 'sb_publishable_4qkd_gYISl4j_s90SqNQ1w_6nfWRcrd');
 
 const canvas = document.getElementById('newsCanvas');
 const ctx = canvas.getContext('2d');
 
-// State Management
-let newsData = { topic: "በመጠበቅ ላይ...", subtopic: "", paragraphs: [], bullet_points: [] };
-let scrollY = 0;
-let scanlineY = 0;
+// --- State Management ---
+let newsData = { topic: "", subtopic: "", paragraphs: [], bullet_points: [] };
+let pIndex = 0;          // Current paragraph index
+let bIndex = 0;          // Current bullet index
+let sIndex = 0;          // Social index
+let opacity = 0;         // For Fade In/Out
+let fadeDir = 1;         // 1 for Fade In, -1 for Fade Out
+let bulletX = 1280;      // Start bullet from right
 
-// Config
-const LOGO_TEXT = "የእኔ";
-const SLOGAN = "እውነተኛ መረጃ ለሁላችንም!";
+const socialItems = ["FOLLOW US", "LIKE", "SHARE", "COMMENT", "SUBSCRIBE"];
 
+// --- 1. Fetch Data ---
 async function updateNews() {
-    const { data, error } = await _supabase
-        .from('news_items')
-        .select('topic, subtopic, paragraphs, bullet_points')
-        .eq('is_active', true)
-        .order('created_at', { ascending: false })
-        .limit(1).single();
-
-    if (data && !error) {
-        if (newsData.topic !== data.topic) scrollY = 0; // Reset scroll for new news
+    const { data } = await _supabase.from('news_items').select('*').eq('is_active', true).limit(1).single();
+    if (data) {
         newsData = data;
-        const ticker = document.getElementById('ticker-text');
-        if(ticker) ticker.innerText = `ሰበር ዜና: ${data.topic} — ${data.subtopic} — `;
+        pIndex = 0; bIndex = 0;
     }
 }
 
-function drawAtmosphere() {
-    // 1. Radial Background
-    const grad = ctx.createRadialGradient(640, 360, 50, 640, 360, 800);
-    grad.addColorStop(0, "#1c1e2e");
-    grad.addColorStop(1, "#0a0a0f");
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+// --- 2. Timing Engines ---
+// Change paragraph every 5 seconds (includes fade time)
+setInterval(() => {
+    fadeDir = -1; // Start fade out
+    setTimeout(() => {
+        pIndex = (pIndex + 1) % (newsData.paragraphs?.length || 1);
+        fadeDir = 1; // Start fade in
+    }, 1000);
+}, 5000);
 
-    // 2. Animated Scanline
-    scanlineY = (scanlineY + 1.5) % canvas.height;
-    ctx.strokeStyle = "rgba(255, 215, 0, 0.05)";
-    ctx.beginPath();
-    ctx.moveTo(0, scanlineY);
-    ctx.lineTo(canvas.width, scanlineY);
-    ctx.stroke();
-
-    // 3. Tech Corner Accents
-    ctx.strokeStyle = "#FFD700";
-    ctx.lineWidth = 2;
-    // Top Left
-    ctx.strokeRect(10, 10, 50, 50);
-    // Bottom Right
-    ctx.strokeRect(canvas.width - 60, canvas.height - 60, 50, 50);
-}
+// Change Social Icon every 3 seconds
+setInterval(() => {
+    sIndex = (sIndex + 1) % socialItems.length;
+}, 3000);
 
 function render() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawAtmosphere();
-
-    // --- 1. HEADER & BRANDING ZONE ---
     
-    // Logo Group (Left Side)
+    // A. STUDIO BACKGROUND
+    const bg = ctx.createLinearGradient(0, 0, 1280, 720);
+    bg.addColorStop(0, "#050505");
+    bg.addColorStop(0.5, "#1a1a2e");
+    bg.addColorStop(1, "#050505");
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // B. TOP RIGHT DIGITAL CLOCK
     ctx.fillStyle = "#FFD700";
-    ctx.font = "bold 60px 'Segoe UI'";
-    ctx.fillText(LOGO_TEXT, 40, 85);
+    ctx.font = "bold 28px 'Courier New'";
+    ctx.fillText(new Date().toLocaleTimeString('en-GB'), 1100, 50);
+
+    // --- C. LEFT SIDE: PICTURE FRAME ---
+    ctx.strokeStyle = "#FFD700";
+    ctx.lineWidth = 4;
+    ctx.strokeRect(40, 80, 400, 300);
+    // Placeholder for Image
+    ctx.fillStyle = "#222";
+    ctx.fillRect(42, 82, 396, 296);
+    // Overlay Text
+    ctx.fillStyle = "rgba(0,0,0,0.7)";
+    ctx.fillRect(40, 320, 400, 60);
+    ctx.fillStyle = "#fff";
+    ctx.font = "bold 16px sans-serif";
+    ctx.fillText("AUTHOR: ABEL & SELAM", 60, 345);
+    ctx.fillText("SOURCE: INTERNAL BROADCAST", 60, 365);
+
+    // --- D. LEFT SIDE: SOCIAL ENGAGEMENT (Below Picture) ---
+    ctx.strokeStyle = "#38bdf8";
+    ctx.strokeRect(40, 400, 400, 100);
+    ctx.fillStyle = "#fff";
+    ctx.font = "bold 24px sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText(socialItems[sIndex], 240, 460); // Carousel of text/icons
+    ctx.textAlign = "left";
+
+    // --- E. RIGHT SIDE: MAIN NEWS WINDOW ---
+    ctx.strokeStyle = "#fff";
+    ctx.strokeRect(480, 80, 760, 420);
     
-    ctx.fillStyle = "#ffffff";
-    ctx.font = "14px 'Segoe UI'";
-    ctx.fillText(SLOGAN, 40, 110);
-
-    // Live Icon (Bottom of Logo)
-    ctx.fillStyle = "#ff0000";
-    ctx.beginPath();
-    ctx.arc(48, 135, 6, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = "#ffffff";
-    ctx.font = "bold 14px 'Segoe UI'";
-    ctx.fillText("LIVE", 62, 140);
-
-    // Topic & Subtopic (Right of Logo)
+    // Topic Header inside Window
     ctx.fillStyle = "#FFD700";
-    ctx.font = "bold 48px 'Segoe UI'";
-    ctx.fillText(newsData.topic, 240, 85);
+    ctx.font = "bold 32px sans-serif";
+    ctx.fillText(newsData.topic || "LOADING...", 500, 130);
 
-    ctx.fillStyle = "#00d4ff";
-    ctx.font = "22px 'Segoe UI'";
-    ctx.fillText(newsData.subtopic || "", 240, 120);
+    // Paragraph Carousel (Fade Logic)
+    if (fadeDir === 1 && opacity < 1) opacity += 0.02;
+    if (fadeDir === -1 && opacity > 0) opacity -= 0.02;
+    
+    ctx.globalAlpha = opacity;
+    ctx.fillStyle = "#eee";
+    ctx.font = "22px sans-serif";
+    if (newsData.paragraphs && newsData.paragraphs[pIndex]) {
+        wrapText(ctx, newsData.paragraphs[pIndex], 500, 180, 700, 32);
+    }
+    ctx.globalAlpha = 1.0;
 
-    // Digital Clock (Top Right)
-    ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
-    ctx.font = "30px 'Courier New'";
-    const timeStr = new Date().toLocaleTimeString('en-GB');
-    ctx.fillText(timeStr, canvas.width - 180, 75);
-
-
-    // --- 2. CONTENT SPLIT ---
-
-    // LEFT COLUMN: Narrative (10 Paragraphs with Auto-Scroll)
+    // --- F. NEWS WINDOW FOOTER: BULLET CAROUSEL (EXIT TO BOTTOM) ---
     ctx.save();
-    ctx.beginPath();
-    ctx.rect(40, 180, 600, 500); // Clipping mask area
-    ctx.clip();
-
-    ctx.fillStyle = "#ffffff";
-    ctx.font = "21px 'Segoe UI'";
-    let currentY = 220 - scrollY;
-
-    if (newsData.paragraphs) {
-        newsData.paragraphs.forEach(p => {
-            currentY = wrapText(ctx, p, 50, currentY, 550, 30) + 25;
-        });
+    ctx.beginPath(); ctx.rect(480, 500, 760, 100); ctx.clip(); // Mask for footer
+    
+    ctx.fillStyle = "#FFD700";
+    ctx.font = "italic 20px sans-serif";
+    
+    // Carousel Logic: Right to Left
+    bulletX -= 3; 
+    if (bulletX < 480) { // When it hits left, drop to bottom
+        bulletX = 1280; 
+        bIndex = (bIndex + 1) % (newsData.bullet_points?.length || 1);
     }
     
-    // Increment scroll
-    scrollY += 0.5;
-    if (scrollY > currentY + 100) scrollY = -400; // Reset scroll loop
-    ctx.restore();
-
-
-    // RIGHT COLUMN: Highlights (Glass-morphism Box)
-    ctx.fillStyle = "rgba(255, 255, 255, 0.07)";
-    ctx.fillRect(680, 180, 560, 500);
-    ctx.strokeStyle = "rgba(255, 215, 0, 0.4)";
-    ctx.strokeRect(680, 180, 560, 500);
-
-    ctx.fillStyle = "#FFD700";
-    ctx.font = "bold 22px 'Segoe UI'";
-    ctx.fillText("ቁልፍ መረጃዎች (Key Highlights)", 710, 220);
-
-    ctx.fillStyle = "#ffffff";
-    ctx.font = "18px 'Segoe UI'";
-    let bulletY = 265;
-    if (newsData.bullet_points) {
-        newsData.bullet_points.slice(0, 13).forEach(b => {
-            ctx.fillStyle = "#FFD700";
-            ctx.fillText("✦", 710, bulletY);
-            ctx.fillStyle = "#ffffff";
-            ctx.fillText(b, 740, bulletY);
-            bulletY += 33;
-        });
+    if (newsData.bullet_points && newsData.bullet_points[bIndex]) {
+        ctx.fillText("• " + newsData.bullet_points[bIndex], bulletX, 560);
     }
+    ctx.restore();
 
     requestAnimationFrame(render);
 }
 
-// Wrap Text Helper
 function wrapText(context, text, x, y, maxWidth, lineHeight) {
     let words = text.split(' ');
     let line = '';
@@ -157,10 +134,9 @@ function wrapText(context, text, x, y, maxWidth, lineHeight) {
         } else { line = testLine; }
     }
     context.fillText(line, x, y);
-    return y + lineHeight;
 }
 
-// Initializers
-setInterval(updateNews, 5000);
+// Init
 updateNews();
+setInterval(updateNews, 10000);
 render();
