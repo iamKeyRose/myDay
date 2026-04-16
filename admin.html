@@ -43,43 +43,36 @@
         const { createClient } = window.supabase;
         const _supabase = createClient('https://hghgifkleqhdeqpoqjln.supabase.co', 'sb_publishable_4qkd_gYISl4j_s90SqNQ1w_6nfWRcrd');
 
-        async function generate() {
-            const rawText = document.getElementById('aiInput').value;
-            if (!rawText) return alert("እባክዎን መጀመሪያ ጽሁፍ ያስገቡ!");
+async function generate() {
+    const rawText = document.getElementById('aiInput').value;
+    const btn = document.getElementById('aiBtn');
+    
+    btn.textContent = "AI Processing...";
+    btn.disabled = true;
 
-            const btn = document.getElementById('aiBtn');
-            const status = document.getElementById('status-msg');
-            
-            btn.textContent = "AI እያሰላ ነው... 🧠";
-            btn.disabled = true;
-            status.textContent = "Contacting Supabase Edge Function...";
-
-            try {
-                // IMPORTANT: Use JSON.stringify for the body
-                const { data, error } = await _supabase.functions.invoke('process-news', {
-                    body: { text: rawText } 
-                });
-
-                if (error) throw error;
-
-                // Handle both string and object responses
-                const news = (typeof data === 'string') ? JSON.parse(data) : data;
-                
-                document.getElementById('t').value = news.topic || "";
-                document.getElementById('p').value = Array.isArray(news.paragraphs) ? news.paragraphs.join('\n\n') : news.paragraphs;
-                
-                status.textContent = "AI Generation Successful!";
-                alert("AI Generation Complete!");
-            } catch (err) {
-                console.error("Full Error:", err);
-                status.textContent = "Error occurred. Check console.";
-                alert("AI Error: " + err.message);
-            } finally {
-                btn.textContent = "Generate with AI ✨";
-                btn.disabled = false;
+    try {
+        // We add the headers to ensure the 401 error goes away
+        const { data, error } = await _supabase.functions.invoke('process-news', {
+            body: { text: rawText },
+            headers: {
+                "Authorization": `Bearer sb_publishable_4qkd_gYISl4j_s90SqNQ1w_6nfWRcrd`
             }
-        }
+        });
 
+        if (error) throw error;
+
+        const res = (typeof data === 'string') ? JSON.parse(data) : data;
+        document.getElementById('t').value = res.topic;
+        document.getElementById('p').value = res.paragraphs.join('\n');
+        alert("Success!");
+    } catch (err) {
+        console.error("Debug Info:", err);
+        alert("Error 401: Check your Supabase Function Authorization settings.");
+    } finally {
+        btn.textContent = "Generate with AI ✨";
+        btn.disabled = false;
+    }
+}
         async function save() {
             const topic = document.getElementById('t').value;
             const content = document.getElementById('p').value;
