@@ -11,63 +11,116 @@ let newsData = {
     bullet_points: []
 };
 
+let scanlinePos = 0;
+let glowValue = 0;
+let glowDir = 1;
+
 // 1. Fetch the LIVE news
 async function updateNews() {
-    const { data, error } = await _supabase
-        .from('news_items')
-        .select('topic, subtopic, paragraphs, bullet_points')
-        .eq('is_active', true)
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .single();
+    try {
+        const { data, error } = await _supabase
+            .from('news_items')
+            .select('topic, subtopic, paragraphs, bullet_points')
+            .eq('is_active', true)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .single();
 
-    if (data && !error) {
-        newsData = data;
-        // Update the ticker text at the bottom too
-        document.getElementById('ticker-text').innerText = `${data.topic} - ${data.subtopic}`;
+        if (data && !error) {
+            newsData = data;
+            const ticker = document.getElementById('ticker-text');
+            if(ticker) ticker.innerText = `ሰበር ዜና: ${data.topic} — ${data.subtopic} — `;
+        }
+    } catch (e) {
+        console.error("Fetch error:", e);
     }
 }
 
-// 2. The Drawing Engine
-function render() {
-    // Background
-    ctx.fillStyle = "#1a1a1a";
+// 2. Helper for professional UI
+function drawBackground() {
+    // Deep Blue Gradient Background
+    const bgGrad = ctx.createRadialGradient(640, 360, 50, 640, 360, 800);
+    bgGrad.addColorStop(0, "#1c1e2e");
+    bgGrad.addColorStop(1, "#0a0b12");
+    ctx.fillStyle = bgGrad;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+    // Animated Scanline
+    ctx.strokeStyle = "rgba(255, 215, 0, 0.05)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(0, scanlinePos);
+    ctx.lineTo(canvas.width, scanlinePos);
+    ctx.stroke();
+    scanlinePos = (scanlinePos + 2) % canvas.height;
+
+    // Tech Frame
+    ctx.strokeStyle = "#FFD700";
+    ctx.lineWidth = 3;
+    ctx.strokeRect(15, 15, canvas.width - 30, canvas.height - 30);
+    
+    // Corner accents
+    ctx.fillStyle = "#FFD700";
+    ctx.fillRect(0, 0, 40, 5); // Top Left
+    ctx.fillRect(0, 0, 5, 40);
+    ctx.fillRect(canvas.width-40, 0, 40, 5); // Top Right
+    ctx.fillRect(canvas.width-5, 0, 5, 40);
+}
+
+// 3. The Drawing Engine
+function render() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawBackground();
+
+    // Pulse effect for Topic
+    glowValue += 0.02 * glowDir;
+    if (glowValue > 1 || glowValue < 0) glowDir *= -1;
+
     // Topic Header
-    ctx.fillStyle = "#FFD700"; // Gold
-    ctx.font = "bold 50px 'Segoe UI'";
-    ctx.fillText(newsData.topic, 50, 80);
+    ctx.shadowBlur = 15 * glowValue;
+    ctx.shadowColor = "#FFD700";
+    ctx.fillStyle = "#FFD700";
+    ctx.font = "bold 52px 'Segoe UI', Arial";
+    ctx.fillText(newsData.topic, 50, 90);
+    ctx.shadowBlur = 0; // Reset shadow
 
     // Subtopic
-    ctx.fillStyle = "#ffffff";
-    ctx.font = "italic 30px 'Segoe UI'";
-    ctx.fillText(newsData.subtopic || "", 50, 130);
+    ctx.fillStyle = "#00d4ff";
+    ctx.font = "26px 'Segoe UI', Arial";
+    ctx.fillText(newsData.subtopic || "", 50, 135);
 
-    // Draw Paragraphs (Showing first 4-5 to fit screen)
-    ctx.fillStyle = "#dddddd";
-    ctx.font = "22px 'Segoe UI'";
-    let yPos = 190;
+    // Sidebar Title for Bullets
+    ctx.fillStyle = "rgba(255, 255, 255, 0.1)";
+    ctx.fillRect(680, 160, 560, 520);
+    ctx.fillStyle = "#FFD700";
+    ctx.font = "bold 24px 'Segoe UI'";
+    ctx.fillText("ቁልፍ ነጥቦች (Key Highlights)", 710, 200);
+
+    // Draw Paragraphs (Left Column)
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "21px 'Segoe UI'";
+    let yPos = 200;
     
-    if (newsData.paragraphs) {
-        newsData.paragraphs.slice(0, 5).forEach(para => {
-            const lines = wrapText(ctx, para, 50, yPos, 600, 30); // Column 1
-            yPos += (lines * 30) + 15;
+    if (newsData.paragraphs && newsData.paragraphs.length > 0) {
+        // Show up to 7 paragraphs on left column
+        newsData.paragraphs.slice(0, 7).forEach(para => {
+            const lines = wrapText(ctx, para, 50, yPos, 600, 30);
+            yPos += (lines * 30) + 20;
         });
     }
 
     // Draw Bullet Points (Right Column)
-    ctx.fillStyle = "#007bff"; 
-    ctx.font = "bold 24px 'Segoe UI'";
-    ctx.fillText("ቁልፍ ነጥቦች", 700, 180);
-
     ctx.fillStyle = "#ffffff";
-    ctx.font = "20px 'Segoe UI'";
-    let bYPos = 220;
-    if (newsData.bullet_points) {
-        newsData.bullet_points.slice(0, 12).forEach(bullet => {
-            ctx.fillText("• " + bullet, 700, bYPos);
-            bYPos += 35;
+    ctx.font = "19px 'Segoe UI'";
+    let bYPos = 245;
+    if (newsData.bullet_points && newsData.bullet_points.length > 0) {
+        // Show up to 13 bullet points to keep it clean
+        newsData.bullet_points.slice(0, 13).forEach(bullet => {
+            ctx.fillStyle = "#FFD700";
+            ctx.fillText("▶", 710, bYPos);
+            ctx.fillStyle = "#ffffff";
+            ctx.fillText(bullet, 740, bYPos);
+            bYPos += 34;
         });
     }
 
@@ -99,12 +152,15 @@ function wrapText(context, text, x, y, maxWidth, lineHeight) {
 
 // Clock Logic
 function updateClock() {
-    const now = new Date();
-    document.getElementById('clock').innerText = now.toLocaleTimeString();
+    const clockEl = document.getElementById('clock');
+    if (clockEl) {
+        const now = new Date();
+        clockEl.innerText = now.toLocaleTimeString('en-GB'); // 24h format
+    }
 }
 
-// Start everything
-setInterval(updateNews, 5000); // Check for new "Live" toggle every 5 seconds
+// Initialization
+setInterval(updateNews, 5000); 
 setInterval(updateClock, 1000);
 updateNews();
 render();
