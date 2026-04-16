@@ -1,34 +1,58 @@
-<!DOCTYPE html>
-<html lang="am">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>የእኔ ቀን - Canvas Live</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <div class="broadcast-outer-frame">
-        <div class="broadcast-container">
-            <div class="brand-frame">
-                <div class="logo-box">
-                    <div class="logo">የእኔ</div>
-                    <div class="live-indicator">LIVE</div>
-                </div>
-                <div class="channel-name">የእኔ ቀን ዜና</div>
-            </div>
+\:root {
+    --gold: #FFD700;
+    --dark-bg: #050505;
+    --studio-blue: #001f3f;
+}
 
-            <div class="canvas-area">
-                <canvas id="newsCanvas" width="1280" height="720"></canvas>
-            </div>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: black; color: white; font-family: 'Nyala', sans-serif; overflow: hidden; }
 
-            <div class="highlights-frame">
-                <div id="ticker-wrap">
-                    <span id="ticker-text">መረጃ እየጠበቅን ነው...</span>
-                </div>
-            </div>
-        </div>
-    </div>
-    <script src="script.js"></script>
-</body>
-</html>
+.broadcast-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.studio-header {
+    height: 80px;
+    background: linear-gradient(90deg, var(--studio-blue), #000);
+    display: flex;
+    align-items: center;
+    padding: 0 30px;
+    border-bottom: 3px solid var(--gold);
+}
+
+.main-logo { background: var(--gold); color: black; padding: 5px 15px; font-weight: 900; font-size: 24px; border-radius: 4px; }
+.live-tag { background: red; color: white; font-size: 12px; padding: 2px 8px; margin-left: 10px; border-radius: 2px; animation: blink 1s infinite; }
+.program-title { margin-left: 20px; font-size: 28px; font-weight: bold; flex-grow: 1; }
+.digital-clock { font-family: monospace; font-size: 24px; color: var(--gold); }
+
+.canvas-wrapper {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: radial-gradient(circle, #111, #000);
+}
+
+#newsCanvas {
+    max-width: 95%;
+    max-height: 90%;
+    border: 4px solid #222;
+    box-shadow: 0 0 50px rgba(0,0,0,1);
+}
+
+.ticker-footer {
+    height: 60px;
+    background: #000;
+    display: flex;
+    align-items: center;
+    border-top: 2px solid var(--gold);
+}
+
+.ticker-label { background: var(--gold); color: black; padding: 0 20px; height: 100%; display: flex; align-items: center; font-weight: bold; z-index: 2; }
+.ticker-wrap { flex-grow: 1; overflow: hidden; white-space: nowrap; }
+.ticker-move { display: inline-block; padding-left: 100%; font-size: 22px; color: white; animation: ticker 25s linear infinite; }
+
+@keyframes ticker { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-100%, 0, 0); } }
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
