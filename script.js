@@ -3,9 +3,11 @@ function updateEngine() {
     if (!savedData) return;
     const data = JSON.parse(savedData);
 
-    // 1. Topic
+    // 1. Topics (RESTORED SUB-TOPIC LOGIC)
     const mainTopic = document.querySelector('.main-topic');
+    const subTopic = document.querySelector('.sub-topic');
     if(data.topic && mainTopic) mainTopic.textContent = data.topic;
+    if(data.subtopic && subTopic) subTopic.textContent = data.subtopic;
 
     // 2. News
     const newsContainer = document.getElementById('news-container');
