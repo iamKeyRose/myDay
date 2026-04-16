@@ -1,17 +1,13 @@
-/**
- * THE ENGINE: Maps data to the UI and sets animation delays
- */
 function updateEngine() {
     const savedData = localStorage.getItem('newsData');
     if (!savedData) return;
-
     const data = JSON.parse(savedData);
 
-    // 1. Update Main Topic
+    // 1. Topic
     const mainTopic = document.querySelector('.main-topic');
     if(data.topic && mainTopic) mainTopic.textContent = data.topic;
 
-    // 2. Update News Paragraphs
+    // 2. News
     const newsContainer = document.getElementById('news-container');
     if (data.paragraphs && newsContainer) {
         newsContainer.innerHTML = ''; 
@@ -24,7 +20,7 @@ function updateEngine() {
         });
     }
 
-    // 3. Update Highlights
+    // 3. Highlights
     const bulletContainer = document.getElementById('highlights-container');
     if (data.bullets && bulletContainer) {
         bulletContainer.innerHTML = '';
@@ -37,7 +33,7 @@ function updateEngine() {
         });
     }
 
-    // 4. Update Images
+    // 4. Media
     const mediaContainer = document.getElementById('media-container');
     if (data.images && mediaContainer) {
         mediaContainer.innerHTML = '';
@@ -50,11 +46,12 @@ function updateEngine() {
         });
     }
 
-    // 5. Update Social Engagement (Pill Contents)
+    // 5. Social Engagement
     const socialContainer = document.getElementById('social-container');
-    if (data.socials && socialContainer) {
+    if (socialContainer) {
         socialContainer.innerHTML = '';
-        data.socials.forEach((s, index) => {
+        const socials = (data.socials && data.socials.length > 0) ? data.socials : ["የእኔ ቀን", "Like & Subscribe", "Follow Us"];
+        socials.forEach((s, index) => {
             const div = document.createElement('div');
             div.className = 's-icon-group';
             div.style.animationDelay = (index * 5) + 's';
@@ -64,15 +61,14 @@ function updateEngine() {
     }
 }
 
-/**
- * LIVE LISTENER & CLOCK
- */
 window.addEventListener('storage', (e) => { if (e.key === 'newsData') updateEngine(); });
 
 function updateClock() {
     const now = new Date();
     const timeEl = document.getElementById('real-time');
+    const dateEl = document.getElementById('real-date');
     if(timeEl) timeEl.textContent = now.toLocaleTimeString('am-ET', {hour12: false});
+    if(dateEl) dateEl.textContent = now.toLocaleDateString('am-ET', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
 }
 
 setInterval(updateClock, 1000);
