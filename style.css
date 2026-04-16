@@ -1,45 +1,130 @@
-/* --- UPDATED KEYFRAMES (TIGHTER EXIT TO PREVENT OVERLAP) --- */
+:root {
+    --myday-gold: #FFD700;
+    --myday-blue: #002B5B;
+    --live-red: #ff0000;
+    /* Total Loop Timings */
+    --p-loop: 60s;   /* 10 items * 6s */
+    --h-loop: 100s;  /* 20 items * 5s */
+    --img-loop: 100s; /* 10 items * 10s */
+}
+
+* { box-sizing: border-box; }
+
+body, html { 
+    margin: 0; padding: 0; width: 100%; height: 100%; 
+    background: #000; overflow: hidden; 
+    display: flex; justify-content: center; align-items: center; 
+    font-family: 'Nyala', sans-serif; 
+}
+
+.broadcast-outer-frame { width: 100vw; height: 100vh; padding: 15px; background: #000; }
+
+.broadcast-container {
+    width: 100%; height: 100%;
+    background: #050505; color: white;
+    display: grid;
+    grid-template-areas: 
+        "brand topics topics" 
+        "media news news" 
+        "social highlights highlights";
+    grid-template-columns: 32% 1fr 1fr;
+    grid-template-rows: 20% 1fr 12%;
+    border: 3px solid #333; 
+    border-radius: 25px; /* Beveled Studio Corner */
+    overflow: hidden;
+}
+
+/* --- Header Section --- */
+.brand-frame { grid-area: brand; display: flex; align-items: center; padding-left: 5%; border-bottom: 4px solid var(--myday-gold); border-right: 1px solid #333; }
+.logo { width: 4.5vw; height: 4.5vw; background: var(--myday-gold); color: black; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 2vw; border-radius: 12px; }
+.live-indicator { background: var(--live-red); color: white; padding: 2px 8px; border-radius: 5px; font-size: 0.8vw; text-align: center; margin-top: 5px; font-weight: bold; animation: pulse 1.5s infinite; }
+.channel-info { margin-left: 1.5vw; }
+.channel-name { font-size: 1.8vw; font-weight: 900; }
+
+.topics-frame { grid-area: topics; background: var(--myday-blue); display: flex; align-items: center; justify-content: space-between; padding: 0 5%; border-bottom: 4px solid var(--myday-gold); }
+.main-topic { font-size: 2.8vw; margin: 0; }
+#real-time { font-size: 2.2vw; font-weight: 900; color: var(--myday-gold); }
+
+/* --- News Content (Paragraphs) - Tightened for Overlap --- */
+.news-frame { grid-area: news; display: flex; align-items: center; justify-content: center; position: relative; padding: 3vw; }
+.p-item { 
+    position: absolute; 
+    width: 90%; 
+    font-size: 2.3vw; 
+    text-align: center; 
+    opacity: 0; 
+    animation: textCycle var(--p-loop) linear infinite; 
+    line-height: 1.4; 
+}
+
+/* --- Highlights (Bullets) --- */
+.highlights-frame { grid-area: highlights; background: #000; border-top: 4px solid var(--myday-gold); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+.h-item { 
+    position: absolute; 
+    color: var(--myday-gold); 
+    font-size: 2vw; 
+    opacity: 0; 
+    animation: bulletCycle var(--h-loop) linear infinite; 
+    white-space: nowrap; 
+}
+
+/* --- Media (Images) --- */
+.media-frame { grid-area: media; position: relative; overflow: hidden; border-right: 1px solid #333; }
+.slide { 
+    position: absolute; 
+    inset: 0; 
+    background-size: cover; 
+    background-position: center; 
+    opacity: 0; 
+    animation: imageCycle var(--img-loop) linear infinite; 
+}
+
+/* --- PROFESSIONAL SOCIAL BADGE (Floating Pill) --- */
+.social-frame { 
+    grid-area: social; 
+    display: flex; 
+    align-items: center; 
+    justify-content: flex-start; /* Aligned to the left */
+    padding-left: 20px;
+    background: transparent;
+}
+
+.s-icon-group { 
+    background: var(--live-red); 
+    color: white; 
+    font-size: 1.1vw; /* Elegant sizing */
+    font-weight: bold; 
+    opacity: 1 !important; 
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 20px;
+    border-radius: 50px; /* Professional Beveled Pill */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4); /* Depth */
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+/* --- PRECISE KEYFRAMES (No Overlapping) --- */
 
 @keyframes textCycle {
     0% { opacity: 0; transform: translateY(15px); }
-    0.5% { opacity: 1; transform: translateY(0); } /* Faster entry */
-    8% { opacity: 1; transform: translateY(0); }   /* Hold for 4.8s */
-    8.5%, 100% { opacity: 0; transform: translateY(-15px); } /* FULLY GONE by 5.1s */
+    0.5% { opacity: 1; transform: translateY(0); }
+    8% { opacity: 1; transform: translateY(0); } /* Holds for ~4.8s */
+    8.5%, 100% { opacity: 0; transform: translateY(-15px); } /* Clears before next slide */
 }
 
 @keyframes bulletCycle {
     0% { opacity: 0; transform: translateX(50px); }
     0.5% { opacity: 1; transform: translateX(0); }
-    4% { opacity: 1; transform: translateX(0); }   /* Hold for 4s */
-    4.2%, 100% { opacity: 0; transform: translateX(-50px); } /* Fully gone by 4.2s */
+    3.8% { opacity: 1; transform: translateX(0); } /* Holds for ~3.8s */
+    4.3%, 100% { opacity: 0; transform: translateX(-50px); } /* Clears before next bullet */
 }
 
 @keyframes imageCycle {
     0% { opacity: 0; transform: scale(1.1); }
     1% { opacity: 1; transform: scale(1); }
-    9% { opacity: 1; transform: scale(1); }        /* Hold for 9s */
-    9.5%, 100% { opacity: 0; }                      /* Fully gone by 9.5s */
+    9% { opacity: 1; transform: scale(1); }
+    10%, 100% { opacity: 0; }
 }
 
-/* --- SOCIAL FRAME BEVEL FIX --- */
-.social-frame { 
-    grid-area: social; 
-    background: var(--live-red); 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    /* This creates the inner bevel corner effect */
-    border-top-right-radius: 20px; 
-    margin-right: -1px; /* Seamless fit */
-}
-
-.s-icon-group { 
-    color: white; 
-    font-size: 1.6vw; 
-    font-weight: bold; 
-    opacity: 1 !important; /* Forces it to stay visible */
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    animation: none !important; /* Kills any lingering fade logic */
-}
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
