@@ -2,52 +2,39 @@
 <html lang="am">
 <head>
     <meta charset="UTF-8">
-    <title>አስተዳዳሪ - የእኔ ቀን</title>
+    <title>የእኔ ቀን - Admin Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body { font-family: sans-serif; background: #f0f2f5; padding: 20px; }
-        .panel { max-width: 600px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-        textarea { width: 100%; height: 250px; padding: 15px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; margin-bottom: 20px; }
-        button { width: 100%; background: #002B5B; color: white; border: none; padding: 15px; border-radius: 8px; font-size: 18px; cursor: pointer; font-weight: bold; }
-        button:hover { background: #004080; }
-        pre { background: #eee; padding: 10px; font-size: 12px; border-radius: 5px; overflow-x: auto; display: none; }
+        body { font-family: sans-serif; background: #f4f4f4; padding: 20px; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        textarea { width: 100%; height: 150px; margin: 10px 0; padding: 10px; }
+        button { padding: 10px 20px; cursor: pointer; border: none; border-radius: 5px; }
+        .btn-ai { background: #7000ff; color: white; }
+        .btn-save { background: #0084ff; color: white; }
+        .news-list { margin-top: 30px; }
+        .news-card { border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .status-live { color: green; font-weight: bold; }
     </style>
 </head>
 <body>
+    <div class="container">
+        <h1>Dashboard</h1>
+        
+        <h3>Generate News with AI</h3>
+        <textarea id="rawInput" placeholder="Paste news link or text here..."></textarea>
+        <button class="btn-ai" onclick="generateWithAI()">AI Generate ✨</button>
+        <hr>
 
-<div class="panel">
-    <h2>የዜና ማስተካከያ ገጽ</h2>
-    <p>መረጃውን እዚህ ጋር ይለጥፉ (Paste):</p>
-    <textarea id="rawInput" placeholder="Topic: ርዕስ እዚህ ይግባ
-Subtopic: ንዑስ ርዕስ
-Paragraph: ዝርዝር ዜና...
-Bullet: ዋና ነጥብ 1
-Bullet: ዋና ነጥብ 2
-Image: https://link-to-image.jpg"></textarea>
-    <button onclick="publishData()">ለብሮድካስት ላክ</button>
-    <pre id="preview"></pre>
-</div>
+        <h3>Manual Editor</h3>
+        <input type="text" id="topic" placeholder="Topic" style="width: 100%; margin-bottom: 10px;">
+        <textarea id="paragraphs" placeholder="Paragraphs (separate with new lines)"></textarea>
+        <button class="btn-save" onclick="saveNews()">Save to Database</button>
 
-<script>
-function publishData() {
-    const text = document.getElementById('rawInput').value;
-    const lines = text.split('\n');
-    let data = { topic: "", subtopic: "", paragraphs: [], bullets: [], images: [] };
-
-    lines.forEach(l => {
-        const line = l.trim();
-        if (line.startsWith('Topic:')) data.topic = line.replace('Topic:', '').trim();
-        else if (line.startsWith('Subtopic:')) data.subtopic = line.replace('Subtopic:', '').trim();
-        else if (line.startsWith('Paragraph:')) data.paragraphs.push(line.replace('Paragraph:', '').trim());
-        else if (line.startsWith('Bullet:')) data.bullets.push(line.replace('Bullet:', '').trim());
-        else if (line.startsWith('Image:')) data.images.push(line.replace('Image:', '').trim());
-    });
-
-    localStorage.setItem('newsData', JSON.stringify(data));
-    const pre = document.getElementById('preview');
-    pre.style.display = 'block';
-    pre.textContent = "ተልኳል: " + JSON.stringify(data, null, 2);
-    alert("በተሳካ ሁኔታ ተልኳል!");
-}
-</script>
+        <div class="news-list">
+            <h3>Recent News Stories</h3>
+            <div id="list-container"></div>
+        </div>
+    </div>
+    <script src="admin.js"></script>
 </body>
 </html>
