@@ -8,7 +8,7 @@
     --myday-blue: #002B5B;
     --live-red: #cc0000;
     --glow: 0 0 20px rgba(255, 215, 0, 0.4);
-    --cycle-speed: 12s; /* Snappier news transitions */
+    --cycle-speed: 12s;
 }
 
 * { box-sizing: border-box; }
@@ -20,7 +20,6 @@ body, html {
     font-family: 'Nyala', 'Inter', sans-serif; 
 }
 
-/* --- PROFESSIONAL OUTER PADDING --- */
 .broadcast-outer-frame {
     width: 100vw; height: 100vh;
     padding: 30px; 
@@ -44,73 +43,80 @@ body, html {
     box-shadow: 0 0 60px rgba(0,0,0,1);
 }
 
-/* --- LIVE ICON & BRANDING --- */
-.brand-frame { 
-    grid-area: brand; background: #000; display: flex; align-items: center; 
-    padding: 0 5%; border-bottom: 4px solid var(--myday-gold); border-right: 1px solid #333; 
-    position: relative;
-}
-.live-indicator {
-    position: absolute; top: 15px; left: 20px;
-    background: var(--live-red); color: white;
-    padding: 2px 8px; border-radius: 4px; font-size: 0.7vw;
-    font-weight: bold; animation: pulseRed 1.5s infinite;
-}
-.logo { 
-    width: 4.5vw; height: 4.5vw; background: var(--myday-gold); color: black; 
-    display: flex; align-items: center; justify-content: center; 
-    font-weight: 900; font-size: 1.8vw; border-radius: 12px; 
-    animation: glowPulse 3s infinite; 
-}
+/* --- BRANDING & LIVE --- */
+.brand-frame { grid-area: brand; background: #000; display: flex; align-items: center; padding: 0 5%; border-bottom: 4px solid var(--myday-gold); border-right: 1px solid #333; position: relative; }
+.live-indicator { position: absolute; top: 15px; left: 20px; background: var(--live-red); color: white; padding: 2px 10px; border-radius: 4px; font-size: 0.7vw; font-weight: bold; animation: pulseRed 1.5s infinite; letter-spacing: 1px; }
+.logo { width: 4.5vw; height: 4.5vw; background: var(--myday-gold); color: black; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.8vw; border-radius: 12px; animation: glowPulse 3s infinite; }
 .brand-text { margin-left: 1.5vw; font-size: 1.8vw; font-weight: 800; }
 
 /* --- TOPICS --- */
-.topics-frame { 
-    grid-area: topics; background: var(--myday-blue); 
-    display: flex; flex-direction: column; justify-content: center; 
-    padding-left: 5%; border-bottom: 4px solid var(--myday-gold); 
-}
-.main-topic { font-size: 3vw; margin: 0; text-transform: uppercase; }
-.sub-topic { font-size: 1.2vw; color: var(--myday-gold); margin: 0; font-style: italic; opacity: 0.9; }
+.topics-frame { grid-area: topics; background: var(--myday-blue); display: flex; flex-direction: column; justify-content: center; padding-left: 5%; border-bottom: 4px solid var(--myday-gold); }
+.main-topic { font-size: 3vw; margin: 0; }
+.sub-topic { font-size: 1.2vw; color: var(--myday-gold); margin: 0; font-style: italic; }
 
 /* --- MEDIA --- */
 .media-frame { grid-area: media; position: relative; background: #111; overflow: hidden; border-right: 1px solid #333; }
 .slide { position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0; animation: zoomFade 20s infinite; }
-.meta-note { 
-    position: absolute; bottom: 8%; left: 5%; background: rgba(0,0,0,0.85); 
-    padding: 0.8vw; border-left: 4px solid var(--myday-gold); font-size: 0.8vw; z-index: 5; 
-}
+.meta-note { position: absolute; bottom: 8%; left: 5%; background: rgba(0,0,0,0.85); padding: 0.8vw; border-left: 4px solid var(--myday-gold); font-size: 0.8vw; z-index: 5; }
 
 /* --- NEWS --- */
 .news-frame { grid-area: news; display: flex; align-items: center; justify-content: center; position: relative; padding: 2vw; }
 .p-item { position: absolute; opacity: 0; font-size: 2.2vw; text-align: center; width: 85%; animation: feedInOut var(--cycle-speed) infinite; line-height: 1.4; }
 
-/* --- RED ENGAGING SOCIAL FRAME --- */
+/* --- ANIMATED SOCIAL FRAME --- */
 .social-frame { 
     grid-area: social; background: var(--live-red); 
     display: flex; align-items: center; justify-content: space-around; 
-    padding: 0 10px; border-top: 1px solid rgba(255,255,255,0.2); 
+    padding: 0 10px; border-top: 1px solid rgba(255,255,255,0.2);
 }
+
 .s-icon-group { 
     display: flex; flex-direction: column; align-items: center; 
     color: white; font-size: 0.7vw; font-weight: bold;
-    transition: transform 0.3s;
+    opacity: 0; transform: translateY(20px);
+    animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
-.s-icon-group svg { width: 1.8vw; height: 1.8vw; fill: white; margin-bottom: 4px; }
 
-/* --- HIGHLIGHTS --- */
-.highlights-frame { 
-    grid-area: highlights; background: #000; border-top: 4px solid var(--myday-gold); 
-    display: flex; align-items: center; justify-content: center; overflow: hidden; 
+/* Staggered Entrance for Icons */
+.s-icon-group:nth-child(1) { animation-delay: 0.2s; }
+.s-icon-group:nth-child(2) { animation-delay: 0.4s; }
+.s-icon-group:nth-child(3) { animation-delay: 0.6s; }
+.s-icon-group:nth-child(4) { animation-delay: 0.8s; }
+.s-icon-group:nth-child(5) { animation-delay: 1.0s; }
+
+.s-icon-group svg { 
+    width: 2vw; height: 2vw; fill: white; margin-bottom: 4px; 
+    transition: transform 0.3s ease, filter 0.3s ease;
+    filter: drop-shadow(0 0 5px rgba(255,255,255,0.2));
+    animation: iconPulse 4s infinite ease-in-out;
 }
+
+/* Hover Engagement */
+.s-icon-group:hover svg {
+    transform: scale(1.3) translateY(-5px);
+    filter: drop-shadow(0 0 15px white);
+}
+
+/* --- TICKER --- */
+.highlights-frame { grid-area: highlights; background: #000; border-top: 4px solid var(--myday-gold); display: flex; align-items: center; justify-content: center; overflow: hidden; }
 .h-item { position: absolute; opacity: 0; font-size: 1.8vw; color: var(--myday-gold); animation: slideRightDown 10s infinite; }
 
-/* ANIMATIONS */
-@keyframes pulseRed { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+/* ANIMATION KEYFRAMES */
+@keyframes popIn {
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes iconPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+@keyframes pulseRed { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(1.05); } }
 @keyframes glowPulse { 0%, 100% { box-shadow: 0 0 10px var(--myday-gold); } 50% { box-shadow: 0 0 30px var(--myday-gold); } }
 @keyframes zoomFade { 0% { opacity: 0; transform: scale(1.2); } 5%, 45% { opacity: 1; } 50%, 100% { opacity: 0; } }
 @keyframes feedInOut { 0%, 5% { opacity: 0; transform: scale(0.95); } 10%, 45% { opacity: 1; transform: scale(1); } 50%, 100% { opacity: 0; } }
 @keyframes slideRightDown { 0%, 5% { opacity: 0; transform: translateX(30vw); } 10%, 45% { opacity: 1; transform: translateX(0); } 50%, 100% { opacity: 0; } }
+
 </style>
 </head>
 <body>
