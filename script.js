@@ -4,16 +4,12 @@ const _supabase = createClient('https://hghgifkleqhdeqpoqjln.supabase.co', 'sb_p
 const canvas = document.getElementById('newsCanvas');
 const ctx = canvas.getContext('2d');
 
-let newsData = {
-    topic: "በመጠበቅ ላይ...",
-    subtopic: "",
-    paragraphs: [],
-    bullet_points: []
-};
-
+// --- State & Config ---
+let newsData = { topic: "በመጠበቅ ላይ...", subtopic: "", paragraphs: [], bullet_points: [] };
+let scrollY = 0; 
 let scanlinePos = 0;
-let glowValue = 0;
-let glowDir = 1;
+const LOGO_TEXT = "የእኔ";
+const SLOGAN = "እውነተኛ መረጃ ለሁላችንም!";
 
 // 1. Fetch the LIVE news
 async function updateNews() {
@@ -27,6 +23,8 @@ async function updateNews() {
             .single();
 
         if (data && !error) {
+            // Reset scroll only if the topic actually changed
+            if (newsData.topic !== data.topic) scrollY = 0;
             newsData = data;
             const ticker = document.getElementById('ticker-text');
             if(ticker) ticker.innerText = `ሰበር ዜና: ${data.topic} — ${data.subtopic} — `;
@@ -36,131 +34,133 @@ async function updateNews() {
     }
 }
 
-// 2. Helper for professional UI
-function drawBackground() {
-    // Deep Blue Gradient Background
+// 2. Atmosphere & Branding Stack
+function drawUI() {
+    // Deep Radial Background
     const bgGrad = ctx.createRadialGradient(640, 360, 50, 640, 360, 800);
     bgGrad.addColorStop(0, "#1c1e2e");
     bgGrad.addColorStop(1, "#0a0b12");
     ctx.fillStyle = bgGrad;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Animated Scanline
+    // Tech Scanline
     ctx.strokeStyle = "rgba(255, 215, 0, 0.05)";
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(0, scanlinePos);
     ctx.lineTo(canvas.width, scanlinePos);
     ctx.stroke();
-    scanlinePos = (scanlinePos + 2) % canvas.height;
+    scanlinePos = (scanlinePos + 1.5) % canvas.height;
 
-    // Tech Frame
-    ctx.strokeStyle = "#FFD700";
-    ctx.lineWidth = 3;
-    ctx.strokeRect(15, 15, canvas.width - 30, canvas.height - 30);
-    
-    // Corner accents
+    // --- Branding Zone (Left Side) ---
+    // Channel Name
     ctx.fillStyle = "#FFD700";
-    ctx.fillRect(0, 0, 40, 5); // Top Left
-    ctx.fillRect(0, 0, 5, 40);
-    ctx.fillRect(canvas.width-40, 0, 40, 5); // Top Right
-    ctx.fillRect(canvas.width-5, 0, 5, 40);
+    ctx.font = "bold 65px 'Segoe UI'";
+    ctx.fillText(LOGO_TEXT, 45, 90);
+    
+    // Slogan
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "14px 'Segoe UI'";
+    ctx.fillText(SLOGAN, 45, 115);
+
+    // LIVE Icon
+    ctx.fillStyle = "#ff0000";
+    ctx.beginPath();
+    ctx.arc(55, 140, 7, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 16px 'Segoe UI'";
+    ctx.fillText("LIVE", 70, 146);
+
+    // --- Header Zone (Right of Logo) ---
+    ctx.fillStyle = "#FFD700";
+    ctx.font = "bold 48px 'Segoe UI'";
+    ctx.fillText(newsData.topic, 250, 90);
+
+    ctx.fillStyle = "#00d4ff";
+    ctx.font = "24px 'Segoe UI'";
+    ctx.fillText(newsData.subtopic || "", 250, 128);
+
+    // Digital Clock (Top Right)
+    ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
+    ctx.font = "28px 'Courier New'";
+    const timeStr = new Date().toLocaleTimeString('en-GB');
+    ctx.fillText(timeStr, canvas.width - 180, 80);
 }
 
-// 3. The Drawing Engine
+// 3. The Main Render Engine
 function render() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawBackground();
+    drawUI();
 
-    // Pulse effect for Topic
-    glowValue += 0.02 * glowDir;
-    if (glowValue > 1 || glowValue < 0) glowDir *= -1;
+    // --- LEFT COLUMN: Scrolling Narrative ---
+    ctx.save();
+    // Clipping Mask to prevent text from overlapping the header
+    ctx.beginPath();
+    ctx.rect(40, 180, 600, 500); 
+    ctx.clip();
 
-    // Topic Header
-    ctx.shadowBlur = 15 * glowValue;
-    ctx.shadowColor = "#FFD700";
-    ctx.fillStyle = "#FFD700";
-    ctx.font = "bold 52px 'Segoe UI', Arial";
-    ctx.fillText(newsData.topic, 50, 90);
-    ctx.shadowBlur = 0; // Reset shadow
-
-    // Subtopic
-    ctx.fillStyle = "#00d4ff";
-    ctx.font = "26px 'Segoe UI', Arial";
-    ctx.fillText(newsData.subtopic || "", 50, 135);
-
-    // Sidebar Title for Bullets
-    ctx.fillStyle = "rgba(255, 255, 255, 0.1)";
-    ctx.fillRect(680, 160, 560, 520);
-    ctx.fillStyle = "#FFD700";
-    ctx.font = "bold 24px 'Segoe UI'";
-    ctx.fillText("ቁልፍ ነጥቦች (Key Highlights)", 710, 200);
-
-    // Draw Paragraphs (Left Column)
     ctx.fillStyle = "#ffffff";
     ctx.font = "21px 'Segoe UI'";
-    let yPos = 200;
-    
-    if (newsData.paragraphs && newsData.paragraphs.length > 0) {
-        // Show up to 7 paragraphs on left column
-        newsData.paragraphs.slice(0, 7).forEach(para => {
-            const lines = wrapText(ctx, para, 50, yPos, 600, 30);
-            yPos += (lines * 30) + 20;
+    let currentY = 220 - scrollY;
+
+    if (newsData.paragraphs) {
+        newsData.paragraphs.forEach(para => {
+            currentY = wrapText(ctx, para, 50, currentY, 550, 32) + 25;
         });
     }
+    
+    // Auto-scroll logic
+    scrollY += 0.5; // Speed of scroll
+    if (scrollY > currentY + 200) scrollY = -400; // Reset loop
+    ctx.restore();
 
-    // Draw Bullet Points (Right Column)
-    ctx.fillStyle = "#ffffff";
+    // --- RIGHT COLUMN: Glass Highlights ---
+    // Glass Box
+    ctx.fillStyle = "rgba(255, 255, 255, 0.08)";
+    ctx.fillRect(680, 180, 560, 505);
+    ctx.strokeStyle = "rgba(255, 215, 0, 0.3)";
+    ctx.strokeRect(680, 180, 560, 505);
+
+    ctx.fillStyle = "#FFD700";
+    ctx.font = "bold 24px 'Segoe UI'";
+    ctx.fillText("ቁልፍ መረጃዎች (Key Highlights)", 710, 220);
+
+    // Bullet Points
     ctx.font = "19px 'Segoe UI'";
-    let bYPos = 245;
-    if (newsData.bullet_points && newsData.bullet_points.length > 0) {
-        // Show up to 13 bullet points to keep it clean
+    let bYPos = 265;
+    if (newsData.bullet_points) {
         newsData.bullet_points.slice(0, 13).forEach(bullet => {
             ctx.fillStyle = "#FFD700";
-            ctx.fillText("▶", 710, bYPos);
+            ctx.fillText("✦", 710, bYPos);
             ctx.fillStyle = "#ffffff";
             ctx.fillText(bullet, 740, bYPos);
-            bYPos += 34;
+            bYPos += 33;
         });
     }
 
     requestAnimationFrame(render);
 }
 
-// Helper: Wrap text so it doesn't go off the canvas
+// Helper: Wrap Text
 function wrapText(context, text, x, y, maxWidth, lineHeight) {
     let words = text.split(' ');
     let line = '';
-    let lineCount = 0;
-
     for (let n = 0; n < words.length; n++) {
         let testLine = line + words[n] + ' ';
-        let metrics = context.measureText(testLine);
-        let testWidth = metrics.width;
-        if (testWidth > maxWidth && n > 0) {
+        if (context.measureText(testLine).width > maxWidth && n > 0) {
             context.fillText(line, x, y);
             line = words[n] + ' ';
             y += lineHeight;
-            lineCount++;
         } else {
             line = testLine;
         }
     }
     context.fillText(line, x, y);
-    return lineCount + 1;
-}
-
-// Clock Logic
-function updateClock() {
-    const clockEl = document.getElementById('clock');
-    if (clockEl) {
-        const now = new Date();
-        clockEl.innerText = now.toLocaleTimeString('en-GB'); // 24h format
-    }
+    return y + lineHeight;
 }
 
 // Initialization
 setInterval(updateNews, 5000); 
-setInterval(updateClock, 1000);
 updateNews();
 render();
