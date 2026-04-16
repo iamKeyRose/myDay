@@ -1,5 +1,5 @@
 /**
- * 1. THE ENGINE: Maps data to the UI and sets animation delays
+ * THE ENGINE: Maps data to the UI and sets animation delays
  */
 function updateEngine() {
     const savedData = localStorage.getItem('newsData');
@@ -7,11 +7,11 @@ function updateEngine() {
 
     const data = JSON.parse(savedData);
 
-    // Update Topics
+    // 1. Update Main Topic
     const mainTopic = document.querySelector('.main-topic');
     if(data.topic && mainTopic) mainTopic.textContent = data.topic;
 
-    // Update News Paragraphs (10 items)
+    // 2. Update News Paragraphs
     const newsContainer = document.getElementById('news-container');
     if (data.paragraphs && newsContainer) {
         newsContainer.innerHTML = ''; 
@@ -24,7 +24,7 @@ function updateEngine() {
         });
     }
 
-    // Update Highlights (20 items)
+    // 3. Update Highlights
     const bulletContainer = document.getElementById('highlights-container');
     if (data.bullets && bulletContainer) {
         bulletContainer.innerHTML = '';
@@ -37,7 +37,7 @@ function updateEngine() {
         });
     }
 
-    // Update Media (10 images)
+    // 4. Update Images
     const mediaContainer = document.getElementById('media-container');
     if (data.images && mediaContainer) {
         mediaContainer.innerHTML = '';
@@ -50,7 +50,7 @@ function updateEngine() {
         });
     }
 
-    // NEW: Update Social Engagement (3 items)
+    // 5. Update Social Engagement (Pill Contents)
     const socialContainer = document.getElementById('social-container');
     if (data.socials && socialContainer) {
         socialContainer.innerHTML = '';
@@ -65,7 +65,7 @@ function updateEngine() {
 }
 
 /**
- * 2. LIVE LISTENER & CLOCK
+ * LIVE LISTENER & CLOCK
  */
 window.addEventListener('storage', (e) => { if (e.key === 'newsData') updateEngine(); });
 
