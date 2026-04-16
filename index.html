@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+<style>
+:root {
+    --myday-gold: #FFD700;
+    --myday-blue: #002B5B;
+    --glow: 0 0 20px rgba(255, 215, 0, 0.3);
+    --cycle-speed: 60s;
+}
+
+body { margin: 0; background: #000; display: flex; justify-content: center; align-items: center; height: 100vh; font-family: 'Nyala', sans-serif; overflow: hidden; }
+
+/* MAIN CONTAINER */
+.broadcast-container {
+    width: 1280px; height: 720px;
+    background: #050505; color: white;
+    display: grid;
+    grid-template-areas: 
+        "brand topics topics"
+        "media news news"
+        "social highlights highlights";
+    grid-template-columns: 400px 1fr 1fr;
+    grid-template-rows: 140px 1fr 100px;
+    gap: 5px; border: 2px solid #222;
+}
+
+/* 1. BRANDING FRAME */
+.brand-frame { grid-area: brand; background: #000; display: flex; align-items: center; padding: 0 30px; border-bottom: 4px solid var(--myday-gold); }
+.logo { width: 60px; height: 60px; background: var(--myday-gold); color: black; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.5rem; border-radius: 5px; animation: glowPulse 3s infinite; }
+
+/* 2. TOPICS FRAME */
+.topics-frame { grid-area: topics; background: var(--myday-blue); display: flex; flex-direction: column; justify-content: center; padding-left: 40px; border-bottom: 4px solid var(--myday-gold); }
+.main-topic { font-size: 2.2rem; margin: 0; text-transform: uppercase; }
+.sub-topic { font-size: 1.2rem; color: var(--myday-gold); margin: 0; font-style: italic; }
+
+/* 3. MEDIA/PICTURE FRAME */
+.media-frame { grid-area: media; position: relative; background: #111; overflow: hidden; border-right: 2px solid #333; }
+.slide { position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0; animation: zoomFade 30s infinite; }
+.meta-note { position: absolute; top: 15px; left: 15px; background: rgba(0,0,0,0.8); padding: 10px; border-left: 3px solid var(--myday-gold); font-size: 0.8rem; z-index: 5; }
+
+/* 4. NEWS FRAME (CENTERED CONTENT) */
+.news-frame { grid-area: news; display: flex; align-items: center; justify-content: center; position: relative; padding: 40px; }
+.p-item { position: absolute; opacity: 0; font-size: 1.8rem; text-align: center; width: 80%; animation: feedInOut var(--cycle-speed) infinite; }
+
+/* 5. SOCIAL ENGAGEMENT */
+.social-frame { grid-area: social; background: #111; display: flex; align-items: center; justify-content: center; border-top: 2px solid #333; }
+.s-item { position: absolute; opacity: 0; color: var(--myday-gold); font-weight: bold; animation: rotateSocial 9s infinite; }
+
+/* 6. NEWS HIGHLIGHTS */
+.highlights-frame { grid-area: highlights; background: #000; border-top: 2px solid var(--myday-gold); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.h-item { position: absolute; opacity: 0; font-size: 1.4rem; color: var(--myday-gold); animation: slideRightDown var(--cycle-speed) infinite; }
+
+/* ANIMATIONS */
+@keyframes glowPulse { 0%, 100% { box-shadow: 0 0 5px var(--myday-gold); } 50% { box-shadow: 0 0 20px var(--myday-gold); } }
+@keyframes zoomFade { 0% { opacity: 0; transform: scale(1.2); } 5%, 15% { opacity: 1; } 20% { opacity: 0; transform: scale(1); } }
+@keyframes feedInOut { 0%, 10% { opacity: 0; transform: scale(0.9); } 12%, 18% { opacity: 1; transform: scale(1); } 19%, 100% { opacity: 0; } }
+@keyframes slideRightDown { 0%, 10% { opacity: 0; transform: translateX(200px); } 11.5%, 14% { opacity: 1; transform: translateX(0); } 14.5%, 16% { opacity: 0; transform: translateY(40px); } 17%, 100% { opacity: 0; } }
+@keyframes rotateSocial { 0%, 5% { opacity: 0; } 10%, 30% { opacity: 1; } 35%, 100% { opacity: 0; } }
+
+#start-btn { position: fixed; z-index: 1000; padding: 20px 40px; background: var(--myday-gold); border: none; font-weight: 900; cursor: pointer; border-radius: 5px; }
+</style>
+</head>
+<body>
+
+<button id="start-btn" onclick="this.style.display='none'; document.getElementById('bgm').play();">START BROADCAST</button>
+<audio id="bgm" loop src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
+
+<div class="broadcast-container">
+    <div class="brand-frame">
+        <div class="logo">የእኔ</div>
+        <div style="margin-left:15px; font-weight:800; font-size:1.4rem;">የእኔ<span>ቀን</span> ዜና</div>
+    </div>
+
+    <div class="topics-frame">
+        <h1 class="main-topic">የኢቶሪካ ነጻነት</h1>
+        <p class="sub-topic">የጥበብ ነጻነት የታየበት ታሪካዊ ምዕራፍ</p>
+    </div>
+
+    <div class="media-frame">
+        <div class="meta-note">ባለቤት: ቴዲ አፍሮ | ምንጭ: የእኔ ቀን መረጃ</div>
+        <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1523810192022-5a0fb9aa7bc8?w=500'); animation-delay: 0s;"></div>
+        <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=500'); animation-delay: 5s;"></div>
+    </div>
+
+    <div class="news-frame">
+        <div class="p-item" style="animation-delay: 0s;">ቴዲ አፍሮ ኢቶሪካን በራሱ መልቀቁ በሙዚቃ ኢንዱስትሪው ውስጥ ትልቅ ለውጥ አምጥቷል።</div>
+        <div class="p-item" style="animation-delay: 5s;">ለሰዋሰው መልቲሚዲያ የተመለሰው 33 ሚሊዮን ብር የጥበብ ነጻነትን የማረጋገጥ እርምጃ ነው።</div>
+    </div>
+
+    <div class="social-frame">
+        <div class="s-item">▶ ሰብስክራይብ</div>
+        <div class="s-item" style="animation-delay:3s;">👍 ላይክ</div>
+    </div>
+
+    <div class="highlights-frame">
+        <div class="h-item">• 33 ሚሊዮን ብር ተመለሰ</div>
+        <div class="h-item" style="animation-delay:2.5s;">• 100% የባለቤትነት መብት</div>
+    </div>
+</div>
+
+</body>
+</html>
