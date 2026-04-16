@@ -2,115 +2,118 @@
 <html lang="am">
 <head>
     <meta charset="UTF-8">
-    <title>Admin - My Day News</title>
+    <title>Professional News Admin</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; padding: 40px; color: #333; }
-        .box { background: white; padding: 30px; border-radius: 12px; max-width: 650px; margin: auto; box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
-        h2 { margin-top: 0; color: #1c1e21; border-bottom: 2px solid #eee; padding-bottom: 10px; }
-        textarea, input { width: 100%; padding: 12px; margin-top: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
-        textarea { height: 120px; resize: vertical; }
-        .btn { padding: 14px; border: none; width: 100%; cursor: pointer; margin-top: 15px; border-radius: 6px; font-weight: bold; font-size: 16px; transition: opacity 0.2s; }
-        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
-        .btn-ai { background: #6f42c1; color: white; }
-        .btn-save { background: #007bff; color: white; }
-        hr { border: 0; border-top: 1px solid #eee; margin: 25px 0; }
-        #status-msg { font-size: 12px; color: #666; margin-top: 8px; text-align: center; }
+        :root { --primary: #007bff; --ai: #6f42c1; }
+        body { font-family: sans-serif; display: flex; height: 100vh; margin: 0; background: #f4f7f6; }
+        
+        /* Sidebar List */
+        .sidebar { width: 350px; background: white; border-right: 1px solid #ddd; overflow-y: auto; padding: 20px; }
+        .news-card { padding: 15px; border: 1px solid #eee; margin-bottom: 10px; border-radius: 8px; cursor: pointer; position: relative; }
+        .news-card.active { border-color: var(--primary); background: #e7f3ff; }
+        .live-badge { position: absolute; top: 5px; right: 5px; background: green; color: white; font-size: 10px; padding: 2px 5px; border-radius: 4px; }
+
+        /* Main Editor */
+        .main-editor { flex: 1; padding: 40px; overflow-y: auto; }
+        .input-group { margin-bottom: 20px; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        textarea, input { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ddd; border-radius: 6px; }
+        .controls { display: flex; gap: 10px; margin-bottom: 20px; }
+        .btn { padding: 12px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .btn-ai { background: var(--ai); color: white; }
+        .btn-save { background: var(--primary); color: white; }
     </style>
 </head>
 <body>
-    <div class="box">
-        <h2>የዜና ማቀነባበሪያ (News Creator)</h2>
-        <p style="font-size: 14px; color: #666;">Paste raw news below and let AI format it for the broadcast.</p>
-        
-        <textarea id="aiInput" placeholder="ወደ አማርኛ እንዲቀየር የሚፈልጉትን ጽሁፍ እዚህ ይለጥፉ..."></textarea>
-        <button class="btn btn-ai" id="aiBtn" onclick="generate()">Generate with AI ✨</button>
-        <div id="status-msg"></div>
 
-        <hr>
-
-        <label>ርዕስ (Topic)</label>
-        <input type="text" id="t" placeholder="የዜናው ርዕስ...">
-        
-        <label style="display:block; margin-top:15px;">ዝርዝር መረጃ (Paragraphs - Use Enter for new lines)</label>
-        <textarea id="p" placeholder="ዝርዝር ዜና እዚህ ይገባል..."></textarea>
-        
-        <button class="btn btn-save" onclick="save()">Save & Publish Live 🚀</button>
+<div class="sidebar" id="newsList">
+    <h3>የዜና ዝርዝር (News List)</h3>
     </div>
 
-    <script>
-        const { createClient } = window.supabase;
-        const _supabase = createClient('https://hghgifkleqhdeqpoqjln.supabase.co', 'sb_publishable_4qkd_gYISl4j_s90SqNQ1w_6nfWRcrd');
+<div class="main-editor">
+    <div class="controls">
+        <textarea id="aiInput" placeholder="Paste source news here..."></textarea>
+        <button class="btn btn-ai" onclick="generate()">Generate with AI ✨</button>
+    </div>
 
-        async function generate() {
-            const rawText = document.getElementById('aiInput').value;
-            if (!rawText) return alert("እባክዎን መጀመሪያ ጽሁፍ ያስገቡ!");
+    <div class="input-group">
+        <label>ርዕስ (Topic)</label>
+        <input type="text" id="t">
+        
+        <label>ንዑስ ርዕስ (Subtopic)</label>
+        <input type="text" id="st">
 
-            const btn = document.getElementById('aiBtn');
-            btn.textContent = "AI Processing... 🧠";
-            btn.disabled = true;
+        <label>ዝርዝር መረጃ (10 Paragraphs)</label>
+        <textarea id="p" style="height: 300px;"></textarea>
 
-            // Your public key used for authentication
-            const anonKey = 'sb_publishable_4qkd_gYISl4j_s90SqNQ1w_6nfWRcrd';
+        <label>ነጥቦች (20 Bullet Points)</label>
+        <textarea id="bp" style="height: 200px;"></textarea>
+        
+        <button class="btn btn-save" onclick="saveNew()">Save to Library 💾</button>
+    </div>
+</div>
 
-            try {
-                // Modified to include explicit apikey and x-client-info for 2026 compatibility
-                const { data, error } = await _supabase.functions.invoke('process-news', {
-                    body: { text: rawText },
-                    headers: {
-                        "apikey": anonKey,
-                        "Authorization": `Bearer ${anonKey}`,
-                        "x-client-info": "supabase-js/2.0.0"
-                    }
-                });
+<script>
+    const { createClient } = window.supabase;
+    const _supabase = createClient('https://hghgifkleqhdeqpoqjln.supabase.co', 'sb_publishable_4qkd_gYISl4j_s90SqNQ1w_6nfWRcrd');
 
-                if (error) throw error;
+    // 1. Load News List
+    async function loadList() {
+        const { data } = await _supabase.from('news_items').select('*').order('created_at', {ascending: false});
+        const listDiv = document.getElementById('newsList');
+        listDiv.innerHTML = '<h3>የዜና ዝርዝር (News List)</h3>';
+        
+        data.forEach(item => {
+            const card = document.createElement('div');
+            card.className = `news-card ${item.is_active ? 'active' : ''}`;
+            card.innerHTML = `
+                ${item.is_active ? '<span class="live-badge">LIVE</span>' : ''}
+                <strong>${item.topic}</strong><br>
+                <small>${new Date(item.created_at).toLocaleDateString()}</small>
+                <button onclick="toggleLive('${item.id}')" style="display:block; margin-top:5px;">Toggle Live</button>
+            `;
+            card.onclick = () => showDetails(item);
+            listDiv.appendChild(card);
+        });
+    }
 
-                // Handle cases where AI returns data as a string or object
-                const res = (typeof data === 'string') ? JSON.parse(data) : data;
-                
-                if (res.topic && res.paragraphs) {
-                    document.getElementById('t').value = res.topic;
-                    document.getElementById('p').value = res.paragraphs.join('\n\n');
-                    alert("AI Generation Complete!");
-                } else {
-                    throw new Error("AI response was not in the correct format.");
-                }
-                
-            } catch (err) {
-                console.error("Full Debug:", err);
-                alert("Error: " + (err.message || "Check Supabase Logs"));
-            } finally {
-                btn.textContent = "Generate with AI ✨";
-                btn.disabled = false;
-            }
-        }
+    // 2. AI Generation
+    async function generate() {
+        const text = document.getElementById('aiInput').value;
+        const { data, error } = await _supabase.functions.invoke('process-news', { body: { text } });
+        if (error) return alert(error.message);
 
-        async function save() {
-            const topic = document.getElementById('t').value;
-            const content = document.getElementById('p').value;
-            if (!topic || !content) return alert("እባክዎን ርዕስ እና ዝርዝር መረጃ ይሙሉ!");
+        const res = typeof data === 'string' ? JSON.parse(data) : data;
+        document.getElementById('t').value = res.topic;
+        document.getElementById('st').value = res.subtopic;
+        document.getElementById('p').value = res.paragraphs.join('\n\n');
+        document.getElementById('bp').value = res.bullets.join('\n');
+    }
 
-            const paras = content.split('\n').filter(line => line.trim() !== "");
-            
-            try {
-                // 1. Deactivate all news
-                await _supabase.from('news_items').update({ is_active: false }).neq('topic', '---');
-                
-                // 2. Insert and set current to active
-                const { error } = await _supabase.from('news_items').insert([{
-                    topic: topic, 
-                    paragraphs: paras, 
-                    is_active: true, 
-                    images: ["https://picsum.photos/600/700"]
-                }]);
-                
-                if (error) throw error;
-                alert("ዜናው በተሳካ ሁኔታ ተለቋል! (News is now LIVE!)");
-            } catch (err) {
-                alert("Save Error: " + err.message);
-            }
-        }
-    </script>
+    // 3. Toggle Live Status
+    async function toggleLive(id) {
+        // Deactivate all first
+        await _supabase.from('news_items').update({ is_active: false }).neq('id', '00000000-0000-0000-0000-000000000000');
+        // Activate selected
+        await _supabase.from('news_items').update({ is_active: true }).eq('id', id);
+        loadList();
+    }
+
+    // 4. Save to Database
+    async function saveNew() {
+        const item = {
+            topic: document.getElementById('t').value,
+            subtopic: document.getElementById('st').value,
+            paragraphs: document.getElementById('p').value.split('\n\n'),
+            bullet_points: document.getElementById('bp').value.split('\n'),
+            is_active: false
+        };
+        const { error } = await _supabase.from('news_items').insert([item]);
+        if (error) alert(error.message);
+        else { alert("Saved!"); loadList(); }
+    }
+
+    loadList();
+</script>
 </body>
 </html>
