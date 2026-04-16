@@ -2,38 +2,52 @@
 <html lang="am">
 <head>
     <meta charset="UTF-8">
-    <title>የእኔ ቀን - Content Manager</title>
+    <title>አስተዳዳሪ - የእኔ ቀን</title>
     <style>
-        body { font-family: sans-serif; background: #f4f4f4; padding: 40px; }
-        .admin-container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        textarea { width: 100%; height: 300px; margin-top: 10px; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; }
-        .hint { font-size: 12px; color: #666; margin-bottom: 10px; }
-        button { background: #002B5B; color: white; border: none; padding: 12px 25px; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        body { font-family: sans-serif; background: #f0f2f5; padding: 20px; }
+        .panel { max-width: 600px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        textarea { width: 100%; height: 250px; padding: 15px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; margin-bottom: 20px; }
+        button { width: 100%; background: #002B5B; color: white; border: none; padding: 15px; border-radius: 8px; font-size: 18px; cursor: pointer; font-weight: bold; }
         button:hover { background: #004080; }
-        #output { margin-top: 20px; padding: 10px; background: #e8f0fe; border-radius: 5px; display: none; }
+        pre { background: #eee; padding: 10px; font-size: 12px; border-radius: 5px; overflow-x: auto; display: none; }
     </style>
 </head>
 <body>
 
-<div class="admin-container">
-    <h2>የእኔ ቀን - Content Parser</h2>
-    <p class="hint">Paste your content below. Use labels like <b>Topic:</b>, <b>Subtopic:</b>, <b>Bullet:</b>, <b>Image:</b> etc.</p>
-    
-    <textarea id="rawContent" placeholder="Topic: የኢቶሪካ ነጻነት
-Subtopic: የጥበብ ነጻነት
-Paragraph: ቴዲ አፍሮ ኢቶሪካን በራሱ መልቀቁ...
-Bullet: 33 ሚሊዮን ብር ተመለሰ
-Image: https://link-to-image.jpg
-Author: ቴዲ አፍሮ"></textarea>
-
-    <button onclick="processContent()">Parse & Send to Engine</button>
-
-    <div id="output">
-        <strong>Parsed JSON Data:</strong>
-        <pre id="jsonPreview"></pre>
-    </div>
+<div class="panel">
+    <h2>የዜና ማስተካከያ ገጽ</h2>
+    <p>መረጃውን እዚህ ጋር ይለጥፉ (Paste):</p>
+    <textarea id="rawInput" placeholder="Topic: ርዕስ እዚህ ይግባ
+Subtopic: ንዑስ ርዕስ
+Paragraph: ዝርዝር ዜና...
+Bullet: ዋና ነጥብ 1
+Bullet: ዋና ነጥብ 2
+Image: https://link-to-image.jpg"></textarea>
+    <button onclick="publishData()">ለብሮድካስት ላክ</button>
+    <pre id="preview"></pre>
 </div>
 
-<script src="admin-parser.js"></script>
+<script>
+function publishData() {
+    const text = document.getElementById('rawInput').value;
+    const lines = text.split('\n');
+    let data = { topic: "", subtopic: "", paragraphs: [], bullets: [], images: [] };
+
+    lines.forEach(l => {
+        const line = l.trim();
+        if (line.startsWith('Topic:')) data.topic = line.replace('Topic:', '').trim();
+        else if (line.startsWith('Subtopic:')) data.subtopic = line.replace('Subtopic:', '').trim();
+        else if (line.startsWith('Paragraph:')) data.paragraphs.push(line.replace('Paragraph:', '').trim());
+        else if (line.startsWith('Bullet:')) data.bullets.push(line.replace('Bullet:', '').trim());
+        else if (line.startsWith('Image:')) data.images.push(line.replace('Image:', '').trim());
+    });
+
+    localStorage.setItem('newsData', JSON.stringify(data));
+    const pre = document.getElementById('preview');
+    pre.style.display = 'block';
+    pre.textContent = "ተልኳል: " + JSON.stringify(data, null, 2);
+    alert("በተሳካ ሁኔታ ተልኳል!");
+}
+</script>
 </body>
 </html>
