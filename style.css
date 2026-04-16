@@ -2,7 +2,7 @@
     --myday-gold: #FFD700;
     --myday-blue: #002B5B;
     --live-red: #ff0000;
-    /* የጊዜ ስሌት - ከጃቫ ስክሪፕቱ ጋር እንዲገጣጠም */
+    /* Animation Timing */
     --p-loop: 60s;   /* 10 items * 6s */
     --h-loop: 100s;  /* 20 items * 5s */
     --img-loop: 100s; /* 10 items * 10s */
@@ -29,13 +29,15 @@ body, html {
         "social highlights highlights";
     grid-template-columns: 32% 1fr 1fr;
     grid-template-rows: 20% 1fr 12%;
-    border: 2px solid #333; border-radius: 15px; overflow: hidden;
+    border: 3px solid #333; 
+    border-radius: 25px; /* Beveled container corners */
+    overflow: hidden;
 }
 
 /* Header Section */
 .brand-frame { grid-area: brand; display: flex; align-items: center; padding-left: 5%; border-bottom: 4px solid var(--myday-gold); border-right: 1px solid #333; }
-.logo { width: 4.5vw; height: 4.5vw; background: var(--myday-gold); color: black; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 2vw; border-radius: 10px; }
-.live-indicator { background: var(--live-red); color: white; padding: 2px 8px; border-radius: 3px; font-size: 0.8vw; text-align: center; margin-top: 5px; font-weight: bold; animation: pulse 1.5s infinite; }
+.logo { width: 4.5vw; height: 4.5vw; background: var(--myday-gold); color: black; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 2vw; border-radius: 12px; }
+.live-indicator { background: var(--live-red); color: white; padding: 2px 8px; border-radius: 5px; font-size: 0.8vw; text-align: center; margin-top: 5px; font-weight: bold; animation: pulse 1.5s infinite; }
 .channel-info { margin-left: 1.5vw; }
 .channel-name { font-size: 1.8vw; font-weight: 900; }
 
@@ -43,7 +45,7 @@ body, html {
 .main-topic { font-size: 2.8vw; margin: 0; }
 #real-time { font-size: 2.2vw; font-weight: 900; color: var(--myday-gold); }
 
-/* News Content (Paragraphs) - መደራረብን ለመከላከል የተስተካከለ */
+/* News Content (Paragraphs) */
 .news-frame { grid-area: news; display: flex; align-items: center; justify-content: center; position: relative; padding: 3vw; }
 .p-item { 
     position: absolute; 
@@ -77,30 +79,48 @@ body, html {
     animation: imageCycle var(--img-loop) linear infinite; 
 }
 
-/* Social Frame */
-.social-frame { grid-area: social; background: var(--live-red); display: flex; align-items: center; justify-content: center; }
+/* --- FIXED SOCIAL ENGAGEMENT (STAYS ALWAYS) --- */
+.social-frame { 
+    grid-area: social; 
+    background: var(--live-red); 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    border-radius: 0 20px 0 0; /* Beveled corner for the top-right of the box */
+    border-right: 1px solid rgba(255,255,255,0.2);
+}
 
-/* --- ጥንቁቅ የጊዜ ስሌት (Precise Keyframes) --- */
+.s-icon-group { 
+    color: white; 
+    font-size: 1.6vw; 
+    font-weight: bold; 
+    opacity: 1; /* Removed animation - stays visible 100% of the time */
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* --- PRECISE KEYFRAMES --- */
 
 @keyframes textCycle {
     0% { opacity: 0; transform: translateY(15px); }
     1% { opacity: 1; transform: translateY(0); }
-    8.5% { opacity: 1; transform: translateY(0); } /* 5.1 ሰከንድ ላይ መጥፋት ይጀምራል */
-    9.5%, 100% { opacity: 0; transform: translateY(-15px); } /* 6ኛው ሰከንድ ሳይመጣ ሙሉ በሙሉ ይጠፋል */
+    8.5% { opacity: 1; transform: translateY(0); }
+    9.5%, 100% { opacity: 0; transform: translateY(-15px); }
 }
 
 @keyframes bulletCycle {
     0% { opacity: 0; transform: translateX(50px); }
     0.5% { opacity: 1; transform: translateX(0); }
-    4% { opacity: 1; transform: translateX(0); } /* 4 ሰከንድ ላይ መጥፋት ይጀምራል */
-    4.5%, 100% { opacity: 0; transform: translateX(-50px); } /* 5ኛው ሰከንድ ላይ ለቀጣዩ ቦታ ይለቃል */
+    4% { opacity: 1; transform: translateX(0); }
+    4.5%, 100% { opacity: 0; transform: translateX(-50px); }
 }
 
 @keyframes imageCycle {
     0% { opacity: 0; transform: scale(1.1); }
     1% { opacity: 1; transform: scale(1); }
-    9% { opacity: 1; transform: scale(1); } /* 9 ሰከንድ ላይ መጥፋት ይጀምራል */
-    10%, 100% { opacity: 0; } /* 10ኛው ሰከንድ ላይ ለቀጣዩ ምስል ቦታ ይለቃል */
+    9% { opacity: 1; transform: scale(1); }
+    10%, 100% { opacity: 0; }
 }
 
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
