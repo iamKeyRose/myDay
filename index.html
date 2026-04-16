@@ -6,8 +6,9 @@
 :root {
     --myday-gold: #FFD700;
     --myday-blue: #002B5B;
-    --glow: 0 0 20px rgba(255, 215, 0, 0.3);
-    --cycle-speed: 60s;
+    --live-red: #cc0000;
+    --glow: 0 0 20px rgba(255, 215, 0, 0.4);
+    --cycle-speed: 12s; /* Snappier news transitions */
 }
 
 * { box-sizing: border-box; }
@@ -19,10 +20,10 @@ body, html {
     font-family: 'Nyala', 'Inter', sans-serif; 
 }
 
-/* --- MAIN CONTAINER WITH PROFESSIONAL PADDING --- */
+/* --- PROFESSIONAL OUTER PADDING --- */
 .broadcast-outer-frame {
     width: 100vw; height: 100vh;
-    padding: 25px; /* ከስክሪኑ ጠርዝ እንዲርቅ የተጨመረ Padding */
+    padding: 30px; 
     background: #000;
     display: flex; justify-content: center; align-items: center;
 }
@@ -36,80 +37,135 @@ body, html {
         "media news news"
         "social highlights highlights";
     grid-template-columns: 32% 1fr 1fr;
-    grid-template-rows: 18% 1fr 12%;
-    border: 2px solid #222;
-    border-radius: 15px; /* የኮንቴይነሩን ጠርዝ ማለስለሻ */
+    grid-template-rows: 18% 1fr 15%;
+    border: 3px solid #333;
+    border-radius: 20px;
     overflow: hidden;
-    box-shadow: 0 0 50px rgba(0,0,0,1), 0 0 10px rgba(255,215,0,0.1);
+    box-shadow: 0 0 60px rgba(0,0,0,1);
 }
 
-/* --- BRANDING --- */
-.brand-frame { grid-area: brand; background: #000; display: flex; align-items: center; padding: 0 5%; border-bottom: 4px solid var(--myday-gold); border-right: 1px solid #333; }
-.logo { width: 4.5vw; height: 4.5vw; background: var(--myday-gold); color: black; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.8vw; border-radius: 10px; animation: glowPulse 3s infinite; }
-.brand-text { margin-left: 1.5vw; font-size: 1.6vw; font-weight: 800; }
+/* --- LIVE ICON & BRANDING --- */
+.brand-frame { 
+    grid-area: brand; background: #000; display: flex; align-items: center; 
+    padding: 0 5%; border-bottom: 4px solid var(--myday-gold); border-right: 1px solid #333; 
+    position: relative;
+}
+.live-indicator {
+    position: absolute; top: 15px; left: 20px;
+    background: var(--live-red); color: white;
+    padding: 2px 8px; border-radius: 4px; font-size: 0.7vw;
+    font-weight: bold; animation: pulseRed 1.5s infinite;
+}
+.logo { 
+    width: 4.5vw; height: 4.5vw; background: var(--myday-gold); color: black; 
+    display: flex; align-items: center; justify-content: center; 
+    font-weight: 900; font-size: 1.8vw; border-radius: 12px; 
+    animation: glowPulse 3s infinite; 
+}
+.brand-text { margin-left: 1.5vw; font-size: 1.8vw; font-weight: 800; }
 
 /* --- TOPICS --- */
-.topics-frame { grid-area: topics; background: var(--myday-blue); display: flex; flex-direction: column; justify-content: center; padding-left: 5%; border-bottom: 4px solid var(--myday-gold); }
-.main-topic { font-size: 3vw; margin: 0; }
-.sub-topic { font-size: 1.2vw; color: var(--myday-gold); margin: 0; font-style: italic; }
+.topics-frame { 
+    grid-area: topics; background: var(--myday-blue); 
+    display: flex; flex-direction: column; justify-content: center; 
+    padding-left: 5%; border-bottom: 4px solid var(--myday-gold); 
+}
+.main-topic { font-size: 3vw; margin: 0; text-transform: uppercase; }
+.sub-topic { font-size: 1.2vw; color: var(--myday-gold); margin: 0; font-style: italic; opacity: 0.9; }
 
 /* --- MEDIA --- */
 .media-frame { grid-area: media; position: relative; background: #111; overflow: hidden; border-right: 1px solid #333; }
-.slide { position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0; animation: zoomFade 30s infinite; }
-.meta-note { position: absolute; bottom: 8%; left: 5%; background: rgba(0,0,0,0.8); padding: 0.8vw; border-left: 4px solid var(--myday-gold); font-size: 0.8vw; z-index: 5; }
+.slide { position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0; animation: zoomFade 20s infinite; }
+.meta-note { 
+    position: absolute; bottom: 8%; left: 5%; background: rgba(0,0,0,0.85); 
+    padding: 0.8vw; border-left: 4px solid var(--myday-gold); font-size: 0.8vw; z-index: 5; 
+}
 
 /* --- NEWS --- */
 .news-frame { grid-area: news; display: flex; align-items: center; justify-content: center; position: relative; padding: 2vw; }
-.p-item { position: absolute; opacity: 0; font-size: 2.2vw; text-align: center; width: 85%; animation: feedInOut var(--cycle-speed) infinite; }
+.p-item { position: absolute; opacity: 0; font-size: 2.2vw; text-align: center; width: 85%; animation: feedInOut var(--cycle-speed) infinite; line-height: 1.4; }
 
-/* --- SOCIAL --- */
-.social-frame { grid-area: social; background: #080808; display: flex; align-items: center; justify-content: center; border-top: 1px solid #333; }
-.s-item { position: absolute; opacity: 0; color: var(--myday-gold); font-size: 1.1vw; animation: rotateSocial 9s infinite; }
+/* --- RED ENGAGING SOCIAL FRAME --- */
+.social-frame { 
+    grid-area: social; background: var(--live-red); 
+    display: flex; align-items: center; justify-content: space-around; 
+    padding: 0 10px; border-top: 1px solid rgba(255,255,255,0.2); 
+}
+.s-icon-group { 
+    display: flex; flex-direction: column; align-items: center; 
+    color: white; font-size: 0.7vw; font-weight: bold;
+    transition: transform 0.3s;
+}
+.s-icon-group svg { width: 1.8vw; height: 1.8vw; fill: white; margin-bottom: 4px; }
 
 /* --- HIGHLIGHTS --- */
-.highlights-frame { grid-area: highlights; background: #000; border-top: 4px solid var(--myday-gold); display: flex; align-items: center; justify-content: center; overflow: hidden; }
-.h-item { position: absolute; opacity: 0; font-size: 1.8vw; color: var(--myday-gold); animation: slideRightDown var(--cycle-speed) infinite; }
+.highlights-frame { 
+    grid-area: highlights; background: #000; border-top: 4px solid var(--myday-gold); 
+    display: flex; align-items: center; justify-content: center; overflow: hidden; 
+}
+.h-item { position: absolute; opacity: 0; font-size: 1.8vw; color: var(--myday-gold); animation: slideRightDown 10s infinite; }
 
 /* ANIMATIONS */
+@keyframes pulseRed { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
 @keyframes glowPulse { 0%, 100% { box-shadow: 0 0 10px var(--myday-gold); } 50% { box-shadow: 0 0 30px var(--myday-gold); } }
-@keyframes zoomFade { 0% { opacity: 0; transform: scale(1.2); } 5%, 15% { opacity: 1; } 20%, 100% { opacity: 0; } }
-@keyframes feedInOut { 0%, 10% { opacity: 0; transform: scale(0.9); } 12%, 18% { opacity: 1; transform: scale(1); } 19%, 100% { opacity: 0; } }
-@keyframes slideRightDown { 0%, 10% { opacity: 0; transform: translateX(30vw); } 11.5%, 14% { opacity: 1; transform: translateX(0); } 14.5%, 100% { opacity: 0; } }
-
-#start-btn { position: fixed; z-index: 1000; padding: 1.2vw 2.5vw; background: var(--myday-gold); border: none; font-weight: bold; border-radius: 50px; cursor: pointer; }
+@keyframes zoomFade { 0% { opacity: 0; transform: scale(1.2); } 5%, 45% { opacity: 1; } 50%, 100% { opacity: 0; } }
+@keyframes feedInOut { 0%, 5% { opacity: 0; transform: scale(0.95); } 10%, 45% { opacity: 1; transform: scale(1); } 50%, 100% { opacity: 0; } }
+@keyframes slideRightDown { 0%, 5% { opacity: 0; transform: translateX(30vw); } 10%, 45% { opacity: 1; transform: translateX(0); } 50%, 100% { opacity: 0; } }
 </style>
 </head>
 <body>
 
-<button id="start-btn" onclick="this.style.display='none'; document.getElementById('bgm').play();">START BROADCAST</button>
-<audio id="bgm" loop src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
-
 <div class="broadcast-outer-frame">
     <div class="broadcast-container">
+        
         <div class="brand-frame">
+            <div class="live-indicator">LIVE</div>
             <div class="logo">የእኔ</div>
             <div class="brand-text">የእኔ<span style="color:var(--myday-gold)">ቀን</span> ዜና</div>
         </div>
+
         <div class="topics-frame">
             <h1 class="main-topic">የኢቶሪካ ነጻነት</h1>
             <p class="sub-topic">የጥበብ ነጻነት የታየበት ታሪካዊ ምዕራፍ</p>
         </div>
+
         <div class="media-frame">
             <div class="meta-note">ባለቤት: ቴዲ አፍሮ | ምንጭ: የእኔ ቀን መረጃ</div>
             <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1523810192022-5a0fb9aa7bc8?w=800');"></div>
-            <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800'); animation-delay: 5s;"></div>
+            <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800'); animation-delay: 10s;"></div>
         </div>
+
         <div class="news-frame">
             <div class="p-item" style="animation-delay: 0s;">ቴዲ አፍሮ ኢቶሪካን በራሱ መልቀቁ በሙዚቃ ኢንዱስትሪው ውስጥ ትልቅ ለውጥ አምጥቷል።</div>
-            <div class="p-item" style="animation-delay: 5s;">ለሰዋሰው መልቲሚዲያ የተመለሰው 33 ሚሊዮን ብር የጥበብ ነጻነትን የማረጋገጥ እርምጃ ነው።</div>
+            <div class="p-item" style="animation-delay: 6s;">ለሰዋሰው መልቲሚዲያ የተመለሰው 33 ሚሊዮን ብር የጥበብ ነጻነትን የማረጋገጥ እርምጃ ነው።</div>
         </div>
+
         <div class="social-frame">
-            <div class="s-item">▶ ሰብስክራይብ ያድርጉ</div>
-            <div class="s-item" style="animation-delay:3s;">👍 ላይክ ያድርጉ</div>
+            <div class="s-icon-group">
+                <svg viewBox="0 0 24 24"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg>
+                <span>Like</span>
+            </div>
+            <div class="s-icon-group">
+                <svg viewBox="0 0 24 24"><path d="M21.58 7.19c-.23-.86-.91-1.54-1.77-1.77C18.25 5 12 5 12 5s-6.25 0-7.81.42c-.86.23-1.54.91-1.77 1.77C2 8.75 2 12 2 12s0 3.25.42 4.81c.23.86.91 1.54 1.77 1.77C5.75 19 12 19 12 19s6.25 0 7.81-.42c.86-.23 1.54-.91 1.77-1.77.42-1.56.42-4.81.42-4.81s0-3.25-.42-4.81zM10 15V9l5.2 3L10 15z"/></svg>
+                <span>Subscribe</span>
+            </div>
+            <div class="s-icon-group">
+                <svg viewBox="0 0 24 24"><path d="M9 22a1 1 0 0 1-1-1v-3H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-6.1l-3.7 3.71c-.2.19-.45.29-.7.29H9z"/></svg>
+                <span>Comment</span>
+            </div>
+            <div class="s-icon-group">
+                <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
+                <span>Share</span>
+            </div>
+            <div class="s-icon-group">
+                <svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+                <span>Alert</span>
+            </div>
         </div>
+
         <div class="highlights-frame">
             <div class="h-item">• 33 ሚሊዮን ብር ተመለሰ</div>
-            <div class="h-item" style="animation-delay:2.5s;">• 100% የባለቤትነት መብት</div>
+            <div class="h-item" style="animation-delay:5s;">• 100% የባለቤትነት መብት</div>
         </div>
     </div>
 </div>
