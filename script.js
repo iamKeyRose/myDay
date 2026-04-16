@@ -1,127 +1,165 @@
-const { createClient } = window.supabase;
+\const { createClient } = window.supabase;
 const _supabase = createClient('https://hghgifkleqhdeqpoqjln.supabase.co', 'sb_publishable_4qkd_gYISl4j_s90SqNQ1w_6nfWRcrd');
 
 const canvas = document.getElementById('newsCanvas');
 const ctx = canvas.getContext('2d');
 
-// --- State Management ---
-let newsData = { topic: "", subtopic: "", paragraphs: [], bullet_points: [] };
-let pIndex = 0;          // Current paragraph index
-let bIndex = 0;          // Current bullet index
-let sIndex = 0;          // Social index
-let opacity = 0;         // For Fade In/Out
-let fadeDir = 1;         // 1 for Fade In, -1 for Fade Out
-let bulletX = 1280;      // Start bullet from right
+// --- Layout State ---
+let newsData = null;
+let pIndex = 0;          
+let bIndex = 0;          
+let sIndex = 0;          
+let opacity = 0;         
+let fadeDir = 1;         
+let bulletX = 1280;      
 
-const socialItems = ["FOLLOW US", "LIKE", "SHARE", "COMMENT", "SUBSCRIBE"];
+const socialItems = ["FOLLOW US", "LIKE & SHARE", "COMMENT", "SUBSCRIBE"];
 
-// --- 1. Fetch Data ---
+// --- 1. Fetching Logic ---
 async function updateNews() {
-    const { data } = await _supabase.from('news_items').select('*').eq('is_active', true).limit(1).single();
-    if (data) {
-        newsData = data;
-        pIndex = 0; bIndex = 0;
+    try {
+        const { data, error } = await _supabase
+            .from('news_items')
+            .select('*')
+            .eq('is_active', true)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .single();
+
+        if (data && !error) {
+            newsData = data;
+        }
+    } catch (err) {
+        console.error("Database connection error:", err);
     }
 }
 
-// --- 2. Timing Engines ---
-// Change paragraph every 5 seconds (includes fade time)
+// --- 2. Animation Timers ---
+// Switch Paragraph every 5 seconds
 setInterval(() => {
-    fadeDir = -1; // Start fade out
+    if (!newsData || !newsData.paragraphs) return;
+    fadeDir = -1; // Start Fade Out
     setTimeout(() => {
-        pIndex = (pIndex + 1) % (newsData.paragraphs?.length || 1);
-        fadeDir = 1; // Start fade in
+        pIndex = (pIndex + 1) % newsData.paragraphs.length;
+        fadeDir = 1; // Start Fade In
     }, 1000);
 }, 5000);
 
-// Change Social Icon every 3 seconds
+// Switch Social Item every 3 seconds
 setInterval(() => {
     sIndex = (sIndex + 1) % socialItems.length;
 }, 3000);
 
+// --- 3. Drawing Engine ---
 function render() {
+    // Basic Clear
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
+    // Safety check: If no data yet, show loading screen
+    if (!newsData) {
+        ctx.fillStyle = "#1a1a2e";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#FFD700";
+        ctx.font = "30px sans-serif";
+        ctx.fillText("Initializing Studio Broadcast...", 450, 360);
+        requestAnimationFrame(render);
+        return;
+    }
+
     // A. STUDIO BACKGROUND
     const bg = ctx.createLinearGradient(0, 0, 1280, 720);
-    bg.addColorStop(0, "#050505");
-    bg.addColorStop(0.5, "#1a1a2e");
-    bg.addColorStop(1, "#050505");
+    bg.addColorStop(0, "#0a0a0f");
+    bg.addColorStop(0.5, "#161b33");
+    bg.addColorStop(1, "#0a0a0f");
     ctx.fillStyle = bg;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // B. TOP RIGHT DIGITAL CLOCK
+    // B. DIGITAL CLOCK (Top Right)
     ctx.fillStyle = "#FFD700";
     ctx.font = "bold 28px 'Courier New'";
-    ctx.fillText(new Date().toLocaleTimeString('en-GB'), 1100, 50);
+    ctx.textAlign = "right";
+    ctx.fillText(new Date().toLocaleTimeString('en-GB'), 1240, 50);
+    ctx.textAlign = "left";
 
     // --- C. LEFT SIDE: PICTURE FRAME ---
     ctx.strokeStyle = "#FFD700";
-    ctx.lineWidth = 4;
-    ctx.strokeRect(40, 80, 400, 300);
-    // Placeholder for Image
-    ctx.fillStyle = "#222";
-    ctx.fillRect(42, 82, 396, 296);
-    // Overlay Text
-    ctx.fillStyle = "rgba(0,0,0,0.7)";
-    ctx.fillRect(40, 320, 400, 60);
+    ctx.lineWidth = 3;
+    ctx.strokeRect(40, 80, 400, 280);
+    ctx.fillStyle = "#000"; // Black screen for image
+    ctx.fillRect(43, 83, 394, 274);
+    
+    // Author/Source Overlay
+    ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
+    ctx.fillRect(40, 300, 400, 60);
+    ctx.fillStyle = "#FFD700";
+    ctx.font = "bold 14px sans-serif";
+    ctx.fillText(`AUTHOR: ${newsData.author_id || "NEWS ROOM"}`, 55, 325);
     ctx.fillStyle = "#fff";
-    ctx.font = "bold 16px sans-serif";
-    ctx.fillText("AUTHOR: ABEL & SELAM", 60, 345);
-    ctx.fillText("SOURCE: INTERNAL BROADCAST", 60, 365);
+    ctx.fillText("SOURCE: GLOBAL NEWS FEED", 55, 345);
 
-    // --- D. LEFT SIDE: SOCIAL ENGAGEMENT (Below Picture) ---
+    // --- D. LEFT SIDE: SOCIAL ENGAGEMENT FRAME ---
     ctx.strokeStyle = "#38bdf8";
-    ctx.strokeRect(40, 400, 400, 100);
+    ctx.strokeRect(40, 380, 400, 100);
+    ctx.fillStyle = "rgba(56, 189, 248, 0.1)";
+    ctx.fillRect(40, 380, 400, 100);
+    
     ctx.fillStyle = "#fff";
-    ctx.font = "bold 24px sans-serif";
+    ctx.font = "bold 26px sans-serif";
     ctx.textAlign = "center";
-    ctx.fillText(socialItems[sIndex], 240, 460); // Carousel of text/icons
+    ctx.fillText(socialItems[sIndex], 240, 440);
     ctx.textAlign = "left";
 
     // --- E. RIGHT SIDE: MAIN NEWS WINDOW ---
-    ctx.strokeStyle = "#fff";
-    ctx.strokeRect(480, 80, 760, 420);
+    ctx.strokeStyle = "#ffffff";
+    ctx.strokeRect(480, 80, 760, 400);
     
-    // Topic Header inside Window
+    // Window Title
     ctx.fillStyle = "#FFD700";
-    ctx.font = "bold 32px sans-serif";
-    ctx.fillText(newsData.topic || "LOADING...", 500, 130);
+    ctx.font = "bold 34px sans-serif";
+    ctx.fillText(newsData.topic.toUpperCase(), 510, 130);
 
-    // Paragraph Carousel (Fade Logic)
-    if (fadeDir === 1 && opacity < 1) opacity += 0.02;
-    if (fadeDir === -1 && opacity > 0) opacity -= 0.02;
+    // Paragraph Carousel (Fade In/Out Logic)
+    if (fadeDir === 1 && opacity < 1) opacity += 0.03;
+    if (fadeDir === -1 && opacity > 0) opacity -= 0.03;
     
-    ctx.globalAlpha = opacity;
-    ctx.fillStyle = "#eee";
+    ctx.save();
+    ctx.globalAlpha = Math.max(0, Math.min(1, opacity));
+    ctx.fillStyle = "#ffffff";
     ctx.font = "22px sans-serif";
     if (newsData.paragraphs && newsData.paragraphs[pIndex]) {
-        wrapText(ctx, newsData.paragraphs[pIndex], 500, 180, 700, 32);
+        wrapText(ctx, newsData.paragraphs[pIndex], 510, 180, 700, 32);
     }
-    ctx.globalAlpha = 1.0;
+    ctx.restore();
 
-    // --- F. NEWS WINDOW FOOTER: BULLET CAROUSEL (EXIT TO BOTTOM) ---
+    // --- F. BOTTOM NEWS WINDOW: BULLET CAROUSEL ---
     ctx.save();
-    ctx.beginPath(); ctx.rect(480, 500, 760, 100); ctx.clip(); // Mask for footer
+    // Mask for the bullet carousel area
+    ctx.beginPath();
+    ctx.rect(480, 480, 760, 80);
+    ctx.clip();
+    
+    ctx.fillStyle = "rgba(255, 215, 0, 0.1)";
+    ctx.fillRect(480, 480, 760, 80);
     
     ctx.fillStyle = "#FFD700";
-    ctx.font = "italic 20px sans-serif";
+    ctx.font = "italic 22px sans-serif";
     
-    // Carousel Logic: Right to Left
-    bulletX -= 3; 
-    if (bulletX < 480) { // When it hits left, drop to bottom
-        bulletX = 1280; 
+    // Move from Right to Left
+    bulletX -= 4; 
+    if (bulletX < 400) { // Exit logic
+        bulletX = 1280;
         bIndex = (bIndex + 1) % (newsData.bullet_points?.length || 1);
     }
     
     if (newsData.bullet_points && newsData.bullet_points[bIndex]) {
-        ctx.fillText("• " + newsData.bullet_points[bIndex], bulletX, 560);
+        ctx.fillText("▶ " + newsData.bullet_points[bIndex], bulletX, 530);
     }
     ctx.restore();
 
     requestAnimationFrame(render);
 }
 
+// Text Wrapper Helper
 function wrapText(context, text, x, y, maxWidth, lineHeight) {
     let words = text.split(' ');
     let line = '';
@@ -136,7 +174,7 @@ function wrapText(context, text, x, y, maxWidth, lineHeight) {
     context.fillText(line, x, y);
 }
 
-// Init
+// Launch
 updateNews();
-setInterval(updateNews, 10000);
+setInterval(updateNews, 10000); 
 render();
