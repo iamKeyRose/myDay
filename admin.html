@@ -45,13 +45,14 @@
 
 async function generate() {
     const rawText = document.getElementById('aiInput').value;
+    if (!rawText) return alert("እባክዎን መጀመሪያ ጽሁፍ ያስገቡ!");
+
     const btn = document.getElementById('aiBtn');
-    
-    btn.textContent = "AI Processing...";
+    btn.textContent = "AI Processing... 🧠";
     btn.disabled = true;
 
     try {
-        // We add the headers to ensure the 401 error goes away
+        // We add the 'headers' section to solve the 401 error
         const { data, error } = await _supabase.functions.invoke('process-news', {
             body: { text: rawText },
             headers: {
@@ -63,17 +64,17 @@ async function generate() {
 
         const res = (typeof data === 'string') ? JSON.parse(data) : data;
         document.getElementById('t').value = res.topic;
-        document.getElementById('p').value = res.paragraphs.join('\n');
-        alert("Success!");
+        document.getElementById('p').value = res.paragraphs.join('\n\n');
+        
+        alert("AI Generation Complete!");
     } catch (err) {
-        console.error("Debug Info:", err);
-        alert("Error 401: Check your Supabase Function Authorization settings.");
+        console.error("Full Debug:", err);
+        alert("Still getting Error 401? Make sure 'Enforce JWT' is OFF in Supabase Settings.");
     } finally {
         btn.textContent = "Generate with AI ✨";
         btn.disabled = false;
     }
-}
-        async function save() {
+}        async function save() {
             const topic = document.getElementById('t').value;
             const content = document.getElementById('p').value;
             if (!topic || !content) return alert("እባክዎን ርዕስ እና ዝርዝር መረጃ ይሙሉ!");
