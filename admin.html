@@ -39,42 +39,54 @@
     </div>
 
     <script>
-        // Use 'supabase' instead of 'lib.supabase' for better compatibility with CDN
         const { createClient } = window.supabase;
         const _supabase = createClient('https://hghgifkleqhdeqpoqjln.supabase.co', 'sb_publishable_4qkd_gYISl4j_s90SqNQ1w_6nfWRcrd');
 
-async function generate() {
-    const rawText = document.getElementById('aiInput').value;
-    if (!rawText) return alert("እባክዎን መጀመሪያ ጽሁፍ ያስገቡ!");
+        async function generate() {
+            const rawText = document.getElementById('aiInput').value;
+            if (!rawText) return alert("እባክዎን መጀመሪያ ጽሁፍ ያስገቡ!");
 
-    const btn = document.getElementById('aiBtn');
-    btn.textContent = "AI Processing... 🧠";
-    btn.disabled = true;
+            const btn = document.getElementById('aiBtn');
+            btn.textContent = "AI Processing... 🧠";
+            btn.disabled = true;
 
-    try {
-        // We add the 'headers' section to solve the 401 error
-        const { data, error } = await _supabase.functions.invoke('process-news', {
-            body: { text: rawText },
-            headers: {
-                "Authorization": `Bearer sb_publishable_4qkd_gYISl4j_s90SqNQ1w_6nfWRcrd`
+            // Your public key used for authentication
+            const anonKey = 'sb_publishable_4qkd_gYISl4j_s90SqNQ1w_6nfWRcrd';
+
+            try {
+                // Modified to include explicit apikey and x-client-info for 2026 compatibility
+                const { data, error } = await _supabase.functions.invoke('process-news', {
+                    body: { text: rawText },
+                    headers: {
+                        "apikey": anonKey,
+                        "Authorization": `Bearer ${anonKey}`,
+                        "x-client-info": "supabase-js/2.0.0"
+                    }
+                });
+
+                if (error) throw error;
+
+                // Handle cases where AI returns data as a string or object
+                const res = (typeof data === 'string') ? JSON.parse(data) : data;
+                
+                if (res.topic && res.paragraphs) {
+                    document.getElementById('t').value = res.topic;
+                    document.getElementById('p').value = res.paragraphs.join('\n\n');
+                    alert("AI Generation Complete!");
+                } else {
+                    throw new Error("AI response was not in the correct format.");
+                }
+                
+            } catch (err) {
+                console.error("Full Debug:", err);
+                alert("Error: " + (err.message || "Check Supabase Logs"));
+            } finally {
+                btn.textContent = "Generate with AI ✨";
+                btn.disabled = false;
             }
-        });
+        }
 
-        if (error) throw error;
-
-        const res = (typeof data === 'string') ? JSON.parse(data) : data;
-        document.getElementById('t').value = res.topic;
-        document.getElementById('p').value = res.paragraphs.join('\n\n');
-        
-        alert("AI Generation Complete!");
-    } catch (err) {
-        console.error("Full Debug:", err);
-        alert("Still getting Error 401? Make sure 'Enforce JWT' is OFF in Supabase Settings.");
-    } finally {
-        btn.textContent = "Generate with AI ✨";
-        btn.disabled = false;
-    }
-}        async function save() {
+        async function save() {
             const topic = document.getElementById('t').value;
             const content = document.getElementById('p').value;
             if (!topic || !content) return alert("እባክዎን ርዕስ እና ዝርዝር መረጃ ይሙሉ!");
