@@ -2,10 +2,11 @@
     --myday-gold: #FFD700;
     --myday-blue: #002B5B;
     --live-red: #ff0000;
-    /* Total Loop Timings */
-    --p-loop: 60s;   /* 10 items * 6s */
-    --h-loop: 100s;  /* 20 items * 5s */
-    --img-loop: 100s; /* 10 items * 10s */
+    /* Master Loops */
+    --p-loop: 60s;   /* 10 paragraphs * 6s */
+    --h-loop: 100s;  /* 20 bullets * 5s */
+    --img-loop: 100s; /* 10 images * 10s */
+    --s-loop: 15s;   /* 3 social handles * 5s */
 }
 
 * { box-sizing: border-box; }
@@ -30,11 +31,11 @@ body, html {
     grid-template-columns: 32% 1fr 1fr;
     grid-template-rows: 20% 1fr 12%;
     border: 3px solid #333; 
-    border-radius: 25px; /* Beveled Studio Corner */
+    border-radius: 25px;
     overflow: hidden;
 }
 
-/* --- Header Section --- */
+/* --- Header --- */
 .brand-frame { grid-area: brand; display: flex; align-items: center; padding-left: 5%; border-bottom: 4px solid var(--myday-gold); border-right: 1px solid #333; }
 .logo { width: 4.5vw; height: 4.5vw; background: var(--myday-gold); color: black; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 2vw; border-radius: 12px; }
 .live-indicator { background: var(--live-red); color: white; padding: 2px 8px; border-radius: 5px; font-size: 0.8vw; text-align: center; margin-top: 5px; font-weight: bold; animation: pulse 1.5s infinite; }
@@ -45,7 +46,7 @@ body, html {
 .main-topic { font-size: 2.8vw; margin: 0; }
 #real-time { font-size: 2.2vw; font-weight: 900; color: var(--myday-gold); }
 
-/* --- News Content (Paragraphs) - Tightened for Overlap --- */
+/* --- News Paragraphs (Fixed Overlap for Slide 3) --- */
 .news-frame { grid-area: news; display: flex; align-items: center; justify-content: center; position: relative; padding: 3vw; }
 .p-item { 
     position: absolute; 
@@ -70,54 +71,64 @@ body, html {
 
 /* --- Media (Images) --- */
 .media-frame { grid-area: media; position: relative; overflow: hidden; border-right: 1px solid #333; }
-.slide { 
-    position: absolute; 
-    inset: 0; 
-    background-size: cover; 
-    background-position: center; 
-    opacity: 0; 
-    animation: imageCycle var(--img-loop) linear infinite; 
-}
+.slide { position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0; animation: imageCycle var(--img-loop) linear infinite; }
 
-/* --- PROFESSIONAL SOCIAL BADGE (Floating Pill) --- */
+/* --- PROFESSIONAL SOCIAL (Pill stays, Text Runs) --- */
 .social-frame { 
     grid-area: social; 
     display: flex; 
     align-items: center; 
-    justify-content: flex-start; /* Aligned to the left */
+    justify-content: flex-start;
     padding-left: 20px;
-    background: transparent;
+}
+
+.s-pill-bg {
+    background: var(--live-red);
+    display: flex;
+    align-items: center;
+    padding: 6px 20px;
+    border-radius: 50px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,255,255,0.2);
+    position: relative;
+    width: 16vw;
+    height: 45px;
+    overflow: hidden; /* This hides the text while it's not "on stage" */
 }
 
 .s-icon-group { 
-    background: var(--live-red); 
+    position: absolute;
+    left: 20px;
     color: white; 
-    font-size: 1.1vw; /* Elegant sizing */
+    font-size: 1.1vw; 
     font-weight: bold; 
-    opacity: 1 !important; 
+    opacity: 0; 
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 6px 20px;
-    border-radius: 50px; /* Professional Beveled Pill */
-    box-shadow: 0 4px 15px rgba(0,0,0,0.4); /* Depth */
-    border: 1px solid rgba(255,255,255,0.2);
+    width: 100%;
+    animation: socialCycle var(--s-loop) linear infinite; 
 }
 
-/* --- PRECISE KEYFRAMES (No Overlapping) --- */
+/* --- Keyframes --- */
 
 @keyframes textCycle {
     0% { opacity: 0; transform: translateY(15px); }
     0.5% { opacity: 1; transform: translateY(0); }
-    8% { opacity: 1; transform: translateY(0); } /* Holds for ~4.8s */
-    8.5%, 100% { opacity: 0; transform: translateY(-15px); } /* Clears before next slide */
+    8% { opacity: 1; transform: translateY(0); } /* Holds for ~5s */
+    8.5%, 100% { opacity: 0; transform: translateY(-15px); } /* Fully gone by 5.1s */
 }
 
 @keyframes bulletCycle {
     0% { opacity: 0; transform: translateX(50px); }
     0.5% { opacity: 1; transform: translateX(0); }
-    3.8% { opacity: 1; transform: translateX(0); } /* Holds for ~3.8s */
-    4.3%, 100% { opacity: 0; transform: translateX(-50px); } /* Clears before next bullet */
+    3.8% { opacity: 1; transform: translateX(0); }
+    4.3%, 100% { opacity: 0; transform: translateX(-50px); }
+}
+
+@keyframes socialCycle {
+    0% { opacity: 0; transform: translateY(15px); }
+    5%, 28% { opacity: 1; transform: translateY(0); } /* Visible for 5s */
+    33%, 100% { opacity: 0; transform: translateY(-15px); }
 }
 
 @keyframes imageCycle {
