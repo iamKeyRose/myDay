@@ -84,11 +84,11 @@ function render() {
     ctx.fillStyle = "rgba(255,255,255,0.05)";
     ctx.fillRect(50, 600, 380, 80);
     ctx.strokeStyle = "rgba(56, 189, 248, 0.4)";
-    ctx.strokeRect(50, 600, 380, 80);
+    ctx.strokeRect(50, 630, 380, 80);
     ctx.fillStyle = "#fff";
     ctx.font = "bold 22px 'Segoe UI'";
     ctx.textAlign = "center";
-    ctx.fillText(socialItems[sIndex], 240, 600);
+    ctx.fillText(socialItems[sIndex], 240, 630);
     ctx.textAlign = "left";
 
     // --- 6. NEWS SECTION (Right Side) ---
