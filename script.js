@@ -15,7 +15,7 @@ let bOpacity = 0;
 let bX = 1280;           
 let bState = "moving";   
 
-const socialItems = ["FOLLOW US", "LIKE & SHARE", "SUBSCRIBE"];
+const socialItems = ["COMMENT","FOLLOW US", "LIKE", "SHARE", "SUBSCRIBE"];
 
 async function updateNews() {
     const { data } = await _supabase.from('news_items').select('*').eq('is_active', true).order('created_at', { ascending: false }).limit(1).single();
@@ -35,7 +35,7 @@ setInterval(() => {
     }, 1500);
 }, 8500);
 
-setInterval(() => { sIndex = (sIndex + 1) % socialItems.length; }, 4000);
+setInterval(() => { sIndex = (sIndex + 1) % socialItems.length; }, 5000);
 
 function render() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -60,19 +60,19 @@ function render() {
     ctx.font = "bold 55px 'Segoe UI'";
     ctx.fillText("የእኔ ዜና", 50, 80);
     ctx.fillStyle = "#ffffff";
-    ctx.font = "italic 16px 'Segoe UI'";
+    ctx.font = "italic 10px 'Segoe UI'";
     ctx.fillText("እውነተኛ መረጃ ለሁላችንም!", 52, 105);
 
     // --- 4. PICTURE FRAME (Left Side) ---
     ctx.strokeStyle = "#FFD700";
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 4;
     ctx.strokeRect(50, 130, 380, 415);
     ctx.fillStyle = "#000";
     ctx.fillRect(52, 132, 376, 411);
     
     // Author/Source Overlay
     ctx.fillStyle = "rgba(0,0,0,0.85)";
-    ctx.fillRect(50, 400, 380, 50);
+    ctx.fillRect(50, 500, 380, 50);
     ctx.fillStyle = "#FFD700";
     ctx.font = "bold 13px Arial";
     ctx.fillText(`PRODUCER: ${newsData.author_id || "STUDIO 1"}`, 65, 340);
