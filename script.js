@@ -78,7 +78,7 @@ function render() {
     ctx.fillText(`PRODUCER: ${newsData.author_id || "STUDIO 1"}`, 65, 480);
     ctx.fillStyle = "#fff";
     ctx.font = "11px Arial";
-    ctx.fillText("SOURCE: SATELLITE FEED • LIVE", 65, 485);
+    ctx.fillText("SOURCE: SATELLITE FEED • LIVE", 65, 495);
 
     // --- 5. SOCIAL ENGAGEMENT (Bottom of Picture) ---
     ctx.fillStyle = "rgba(255,255,255,0.05)";
