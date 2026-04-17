@@ -66,7 +66,7 @@ function render() {
     // --- 4. PICTURE FRAME (Left Side) ---
     ctx.strokeStyle = "#FFD700";
     ctx.lineWidth = 2;
-    ctx.strokeRect(50, 130, 380, 240);
+    ctx.strokeRect(50, 130, 380, 320);
     ctx.fillStyle = "#000";
     ctx.fillRect(52, 132, 376, 316);
     
@@ -82,7 +82,7 @@ function render() {
 
     // --- 5. SOCIAL ENGAGEMENT (Bottom of Picture) ---
     ctx.fillStyle = "rgba(255,255,255,0.05)";
-    ctx.fillRect(50, 390, 380, 80);
+    ctx.fillRect(50, 310, 380, 80);
     ctx.strokeStyle = "rgba(56, 189, 248, 0.4)";
     ctx.strokeRect(50, 390, 380, 80);
     ctx.fillStyle = "#fff";
