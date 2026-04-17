@@ -75,10 +75,10 @@ function render() {
     ctx.fillRect(50, 500, 380, 50);
     ctx.fillStyle = "#FFD700";
     ctx.font = "bold 13px Arial";
-    ctx.fillText(`PRODUCER: ${newsData.author_id || "STUDIO 1"}`, 65, 340);
+    ctx.fillText(`PRODUCER: ${newsData.author_id || "STUDIO 1"}`, 65, 470);
     ctx.fillStyle = "#fff";
     ctx.font = "11px Arial";
-    ctx.fillText("SOURCE: SATELLITE FEED • LIVE", 65, 355);
+    ctx.fillText("SOURCE: SATELLITE FEED • LIVE", 65, 485);
 
     // --- 5. SOCIAL ENGAGEMENT (Bottom of Picture) ---
     ctx.fillStyle = "rgba(255,255,255,0.05)";
@@ -88,7 +88,7 @@ function render() {
     ctx.fillStyle = "#fff";
     ctx.font = "bold 22px 'Segoe UI'";
     ctx.textAlign = "center";
-    ctx.fillText(socialItems[sIndex], 240, 635);
+    ctx.fillText(socialItems[sIndex], 240, 640);
     ctx.textAlign = "left";
 
     // --- 6. NEWS SECTION (Right Side) ---
