@@ -152,7 +152,7 @@ function render() {
     ctx.font = "italic 28px 'Segoe UI'";
     ctx.textAlign = "center";
     if (newsData.bullet_points && newsData.bullet_points[bIndex]) {
-        ctx.fillText("✦  " + newsData.bullet_points[bIndex] + "  ✦", bX-450, bY);
+        ctx.fillText("✦  " + newsData.bullet_points[bIndex] + "  ✦", bX+450, bY);
     }
     ctx.restore();
 
