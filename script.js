@@ -72,10 +72,10 @@ function render() {
     
     // Author/Source Overlay
     ctx.fillStyle = "rgba(0,0,0,0.85)";
-    ctx.fillRect(51, 500, 376, 46);
+    ctx.fillRect(51, 500, 372, 42);
     ctx.fillStyle = "#FFD700";
     ctx.font = "bold 13px Arial";
-    ctx.fillText(`PRODUCER: ${newsData.author_id || "STUDIO 1"}`, 65, 470);
+    ctx.fillText(`PRODUCER: ${newsData.author_id || "STUDIO 1"}`, 65, 480);
     ctx.fillStyle = "#fff";
     ctx.font = "11px Arial";
     ctx.fillText("SOURCE: SATELLITE FEED • LIVE", 65, 485);
@@ -88,7 +88,7 @@ function render() {
     ctx.fillStyle = "#fff";
     ctx.font = "bold 22px 'Segoe UI'";
     ctx.textAlign = "center";
-    ctx.fillText(socialItems[sIndex], 240, 640);
+    ctx.fillText(socialItems[sIndex], 240, 645);
     ctx.textAlign = "left";
 
     // --- 6. NEWS SECTION (Right Side) ---
