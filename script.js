@@ -124,7 +124,7 @@ function render() {
     ctx.restore();
 
     // --- 7. THE BULLETIN (Center-Stop & Fade Out) ---
-    const bY = 640;
+    const bY = 740;
     ctx.save();
     if (bState === "moving") {
         bX -= 4; // Approach speed
