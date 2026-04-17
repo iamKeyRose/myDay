@@ -66,7 +66,7 @@ function render() {
     // --- 4. PICTURE FRAME (Left Side) ---
     ctx.strokeStyle = "#FFD700";
     ctx.lineWidth = 2;
-    ctx.strokeRect(50, 130, 380, 320);
+    ctx.strokeRect(50, 130, 460, 320);
     ctx.fillStyle = "#000";
     ctx.fillRect(52, 132, 376, 316);
     
