@@ -84,7 +84,7 @@ function render() {
     ctx.fillStyle = "rgba(255,255,255,0.05)";
     ctx.fillRect(50, 580, 380, 100);
     ctx.strokeStyle = "rgba(56, 189, 248, 0.4)";
-    ctx.strokeRect(50, 580, 380, 80);
+    ctx.strokeRect(50, 580, 380, 100);
     ctx.fillStyle = "#fff";
     ctx.font = "bold 32px 'Segoe UI'";
     ctx.textAlign = "center";
