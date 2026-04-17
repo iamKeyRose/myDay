@@ -82,13 +82,13 @@ function render() {
 
     // --- 5. SOCIAL ENGAGEMENT (Bottom of Picture) ---
     ctx.fillStyle = "rgba(255,255,255,0.05)";
-    ctx.fillRect(50, 550, 380, 80);
+    ctx.fillRect(50, 600, 380, 80);
     ctx.strokeStyle = "rgba(56, 189, 248, 0.4)";
-    ctx.strokeRect(50, 550, 380, 80);
+    ctx.strokeRect(50, 600, 380, 80);
     ctx.fillStyle = "#fff";
     ctx.font = "bold 22px 'Segoe UI'";
     ctx.textAlign = "center";
-    ctx.fillText(socialItems[sIndex], 240, 380);
+    ctx.fillText(socialItems[sIndex], 240, 600);
     ctx.textAlign = "left";
 
     // --- 6. NEWS SECTION (Right Side) ---
