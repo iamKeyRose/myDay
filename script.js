@@ -149,10 +149,10 @@ function render() {
 
     ctx.globalAlpha = bOpacity;
     ctx.fillStyle = "#FFD700";
-    ctx.font = "italic 38px 'Segoe UI'";
+    ctx.font = "italic 34px 'Segoe UI'";
     ctx.textAlign = "center";
     if (newsData.bullet_points && newsData.bullet_points[bIndex]) {
-        ctx.fillText("✦  " + newsData.bullet_points[bIndex] + "  ✦", bX+250, bY);
+        ctx.fillText("✦  " + newsData.bullet_points[bIndex] + "  ✦", bX+310, bY);
     }
     ctx.restore();
 
