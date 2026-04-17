@@ -68,7 +68,7 @@ function render() {
     ctx.lineWidth = 2;
     ctx.strokeRect(50, 130, 380, 240);
     ctx.fillStyle = "#000";
-    ctx.fillRect(52, 132, 376, 236);
+    ctx.fillRect(52, 132, 376, 320);
     
     // Author/Source Overlay
     ctx.fillStyle = "rgba(0,0,0,0.85)";
