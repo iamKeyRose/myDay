@@ -66,9 +66,9 @@ function render() {
     // --- 4. PICTURE FRAME (Left Side) ---
     ctx.strokeStyle = "#FFD700";
     ctx.lineWidth = 2;
-    ctx.strokeRect(50, 130, 380, 410);
+    ctx.strokeRect(50, 130, 380, 415);
     ctx.fillStyle = "#000";
-    ctx.fillRect(52, 132, 376, 406);
+    ctx.fillRect(52, 132, 376, 411);
     
     // Author/Source Overlay
     ctx.fillStyle = "rgba(0,0,0,0.85)";
@@ -88,7 +88,7 @@ function render() {
     ctx.fillStyle = "#fff";
     ctx.font = "bold 22px 'Segoe UI'";
     ctx.textAlign = "center";
-    ctx.fillText(socialItems[sIndex], 240, 440);
+    ctx.fillText(socialItems[sIndex], 240, 550);
     ctx.textAlign = "left";
 
     // --- 6. NEWS SECTION (Right Side) ---
