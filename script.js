@@ -66,19 +66,19 @@ function render() {
     // --- 4. PICTURE FRAME (Left Side) ---
     ctx.strokeStyle = "#FFD700";
     ctx.lineWidth = 2;
-    ctx.strokeRect(50, 130, 380, 400);
+    ctx.strokeRect(50, 130, 380, 410);
     ctx.fillStyle = "#000";
-    ctx.fillRect(52, 132, 376, 396);
+    ctx.fillRect(52, 132, 376, 406);
     
     // Author/Source Overlay
     ctx.fillStyle = "rgba(0,0,0,0.85)";
     ctx.fillRect(50, 400, 380, 50);
     ctx.fillStyle = "#FFD700";
     ctx.font = "bold 13px Arial";
-    ctx.fillText(`PRODUCER: ${newsData.author_id || "STUDIO 1"}`, 65, 340);
+    ctx.fillText(`PRODUCER: ${newsData.author_id || "STUDIO 1"}`, 65, 380);
     ctx.fillStyle = "#fff";
     ctx.font = "11px Arial";
-    ctx.fillText("SOURCE: SATELLITE FEED • LIVE", 65, 355);
+    ctx.fillText("SOURCE: SATELLITE FEED • LIVE", 65, 395);
 
     // --- 5. SOCIAL ENGAGEMENT (Bottom of Picture) ---
     ctx.fillStyle = "rgba(255,255,255,0.05)";
