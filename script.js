@@ -72,7 +72,7 @@ function render() {
     
     // Author/Source Overlay
     ctx.fillStyle = "rgba(0,0,0,0.85)";
-    ctx.fillRect(50, 320, 380, 50);
+    ctx.fillRect(50, 400, 380, 50);
     ctx.fillStyle = "#FFD700";
     ctx.font = "bold 13px Arial";
     ctx.fillText(`PRODUCER: ${newsData.author_id || "STUDIO 1"}`, 65, 340);
