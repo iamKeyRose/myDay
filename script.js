@@ -98,10 +98,10 @@ function render() {
     // --- TOPIC & SUBTOPIC (CRITICAL: OUTSIDE THE FRAME) ---
     ctx.fillStyle = "#FFD700";
     ctx.font = "bold 42px 'Segoe UI'";
-    ctx.fillText(newsData.topic.toUpperCase(), newsX, 80); // Placed at Y:80 (Above the Y:130 Frame)
+    ctx.fillText(newsData.topic.toUpperCase(), newsX-50, 80); // Placed at Y:80 (Above the Y:130 Frame)
     ctx.fillStyle = "#00d4ff";
     ctx.font = "22px 'Segoe UI'";
-    ctx.fillText(newsData.subtopic || "", newsX, 110);
+    ctx.fillText(newsData.subtopic || "", newsX + 10, 110);
 
     // THE NEWS WINDOW FRAME (Y starts at 130)
     ctx.fillStyle = "rgba(255,255,255,0.02)";
