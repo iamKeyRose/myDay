@@ -98,7 +98,7 @@ function render() {
     // --- TOPIC & SUBTOPIC (CRITICAL: OUTSIDE THE FRAME) ---
     ctx.fillStyle = "#FFD700";
     ctx.font = "bold 42px 'Segoe UI'";
-    ctx.fillText(newsData.topic.toUpperCase(), newsX-50, 80); // Placed at Y:80 (Above the Y:130 Frame)
+    ctx.fillText(newsData.topic.toUpperCase(), newsX-100, 80); // Placed at Y:80 (Above the Y:130 Frame)
     ctx.fillStyle = "#00d4ff";
     ctx.font = "22px 'Segoe UI'";
     ctx.fillText(newsData.subtopic || "", newsX + 10, 110);
@@ -116,7 +116,7 @@ function render() {
     ctx.save();
     ctx.globalAlpha = pOpacity;
     ctx.fillStyle = "#ffffff";
-    ctx.font = "26px 'Segoe UI'";
+    ctx.font = "36px 'Segoe UI'";
     ctx.textAlign = "center"; 
     if (newsData.paragraphs && newsData.paragraphs[pIndex]) {
         wrapTextCentered(ctx, newsData.paragraphs[pIndex], newsX + (newsWidth/2), 240, 700, 38);
@@ -136,7 +136,7 @@ function render() {
             this.stopTimer = setTimeout(() => { 
                 bState = "exiting"; 
                 this.stopTimer = null;
-            }, 4000);
+            }, 8000);
         }
     } else if (bState === "exiting") {
         bOpacity -= 0.02; // Fade out
@@ -149,10 +149,10 @@ function render() {
 
     ctx.globalAlpha = bOpacity;
     ctx.fillStyle = "#FFD700";
-    ctx.font = "italic 24px 'Segoe UI'";
+    ctx.font = "italic 28px 'Segoe UI'";
     ctx.textAlign = "center";
     if (newsData.bullet_points && newsData.bullet_points[bIndex]) {
-        ctx.fillText("✦  " + newsData.bullet_points[bIndex] + "  ✦", bX, bY);
+        ctx.fillText("✦  " + newsData.bullet_points[bIndex] + "  ✦", bX-450, bY);
     }
     ctx.restore();
 
